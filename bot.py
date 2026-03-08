@@ -225,3 +225,4 @@ async def leaderboard(ctx):
 
 # ---------- RUN ----------
 bot.run(os.getenv("TOKEN"))
+
