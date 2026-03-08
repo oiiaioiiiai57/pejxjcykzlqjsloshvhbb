@@ -3,5 +3,10 @@
         "account": "Live | 5154620020856215|04|2026|792 | [BIN: \ud83c\uddfa\ud83c\uddf8 - mastercard - debit] | Charge OK. [GATE_01@chkr.cc]",
         "user": 1112314692258512926,
         "service": "bin"
+    },
+    "EKPC": {
+        "account": "[",
+        "user": 1112314692258512926,
+        "service": "bin"
     }
 }
