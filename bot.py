@@ -23,7 +23,7 @@ LOG_CHANNEL_ID = 1479239531499880628
 
 # -------- GITHUB --------
 
-GITHUB_REPO = "chevalier5771/gen-bot"
+GITHUB_REPO = "chevalier577pro/gen-bot"
 
 g = Github(os.getenv("GITHUB_TOKEN"))
 repo = g.get_repo(GITHUB_REPO)
