@@ -1,1 +1,7 @@
-{}
+{
+    "CUHK": {
+        "account": "Use this key to access https://aimlapi.com",
+        "user": 1406599824089808967,
+        "service": "test"
+    }
+}
