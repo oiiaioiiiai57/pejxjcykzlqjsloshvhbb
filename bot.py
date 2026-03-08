@@ -10,7 +10,7 @@ from github import Github
 # ---------------- CONFIG ----------------
 TOKEN = os.getenv("TOKEN")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-REPO_NAME = "TON_USER/TON_REPO"
+REPO_NAME = "chevalier577pro/gen-bot"
 
 FREE_CHANNEL = 1479204587104895060
 PREMIUM_CHANNEL = 1479080682616520718
