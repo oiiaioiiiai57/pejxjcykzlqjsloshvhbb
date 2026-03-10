@@ -9,6 +9,7 @@ import asyncio
 import time
 from github import Github
 
+
 # ------------------ CONFIG ------------------
 
 TOKEN = os.getenv("TOKEN")
