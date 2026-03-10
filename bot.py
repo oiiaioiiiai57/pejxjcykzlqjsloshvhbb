@@ -33,7 +33,7 @@ MODERATOR_ROLES = [
 # ------------------ INIT ------------------
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents, help_command=None)
 
 auth = Auth.Token(GITHUB_TOKEN)
 github = Github(auth=auth)
