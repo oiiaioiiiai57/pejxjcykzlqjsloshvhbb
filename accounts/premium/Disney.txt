@@ -1,7 +1,4 @@
-estherjbartlett@gmail.com:HollyJolly67 | Country = Australia | EmailVerified = true | Is Subscribed = true | Plan = Disney Plus Standard Monthly - AU - Web | NextBillingDate = 2026-03-21 | PaymentMethod = BAMTECH 
- 
 mordragor@hotmail.fr:Pokemonpowa09+ | Country = France | EmailVerified = true | Is Subscribed = true | Plan = Disney Plus Yearly - FR - Web - 2021 | NextBillingDate = 2026-04-14 | PaymentMethod = BAMTECH
-
 sayowi3883@zoefun.com:Smokekill1 | Mail Doğrulaması = ❌ | Paket = Disney Plus Standard Monthly - MX - Web | Bitiş Tarihi = 2026-03-11 | Pin = [❌, ✔, ❌, ❌, ❌] | Config By = @nexaacloud
 paulina.jimenez.icc@gmail.com:1230123.D | Mail Doğrulaması = ✔️ | Paket = Disney+ Basic - MX - Mercado Libre - L6 Bundle Paid | Pin = [❌] | Config By = @nexaacloud
 daniel411520@gmail.com:Lyanna090218 | Mail Doğrulaması = ✔️ | Paket = Disney Plus Monthly - AR - Web | Bitiş Tarihi = 2026-03-12 | Pin = [❌, ❌, ❌, ❌, ❌] | Config By = @nexaacloud
