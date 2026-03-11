@@ -1,13 +1,3 @@
-– Email: asieduaabernice55@gmail.com
-– Verified: false
-– Profile: King🤴
-– Plan:
-– Next billing:
-– Extra members: false
-– Country: GH
-– Payments: 1 | CC (VISA 7485)
-– Cookies: @xarven1
-.netflix.com	TRUE	/	FALSE	1772650935	flwssn	8e346c7c-3ed4-4075-9b31-950ec9897ac6
 .netflix.com	TRUE	/	TRUE	1772650935	gsid	3e97403d-d71e-4c1d-b88e-1b8301f4d363
 .netflix.com	TRUE	/	FALSE	1789427014	OptanonConsent	isGpcEnabled=0&datestamp=Mon+Sep+15+2025+00%3A03%3A34+GMT%2B0100+(British+Summer+Time)&version=202508.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=e435a64f-356f-4cfb-ab90-e204d2e909c8&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1&AwaitingReconsent=false
 .netflix.com	TRUE	/	FALSE	1771573272	netflix-sans-bold-3-loaded	true
