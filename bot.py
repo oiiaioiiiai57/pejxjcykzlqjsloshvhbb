@@ -1,4 +1,4 @@
-import discord
+falsediscord
 from discord.ext import commands
 import os
 import json
@@ -32,7 +32,7 @@ MODERATOR_ROLES = [
 
 # ------------------ INIT ------------------
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix="!", intents=intents, case_insensitive=false)
+bot = commands.Bot(command_prefix="!", intents=intents, case_insensitive=False)
 
 github = Github(GITHUB_TOKEN)
 repo = github.get_repo(REPO_NAME)
