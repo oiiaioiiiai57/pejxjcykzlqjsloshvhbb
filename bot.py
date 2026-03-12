@@ -12,7 +12,7 @@ from github import Github, GithubException, Auth
 # ------------------ CONFIG ------------------
 TOKEN        = os.getenv("TOKEN")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-REPO_NAME    = "chevalier577pro/gen-bot"
+REPO_NAME    = "chevalier577pro/pejxjcykzlqjsloshvhbb"
 
 FREE_CHANNEL    = 1479204587104895060
 PREMIUM_CHANNEL = 1479080682616520718
