@@ -1,4 +1,0 @@
-flask==3.0.3
-flask-cors==4.0.1
-PyGithub==2.3.0
-py-cord==2.6.1
