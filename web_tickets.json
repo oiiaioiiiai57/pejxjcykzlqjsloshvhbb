@@ -50,7 +50,7 @@
         "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistr\u00e9 ici.",
         "discord_channel_id": "1482112342505291818",
         "redeemed": true,
-        "closed": false,
+        "closed": true,
         "messages": [],
         "msg_counter": 0,
         "created_at": "2026-03-13T20:25:19.515975"
