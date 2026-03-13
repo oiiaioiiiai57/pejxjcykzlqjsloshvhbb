@@ -41,5 +41,12 @@
         "web_ticket_id": "wG7__WMOlK6nhp0sh2IB4g",
         "tier": "free",
         "service": "Test"
+    },
+    "9XVPXR": {
+        "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistr\u00e9 ici.",
+        "user": 1112314692258512926,
+        "web_ticket_id": "kQk8fU9ACwkL162tXCQBzw",
+        "tier": "free",
+        "service": "Test"
     }
 }
