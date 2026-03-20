@@ -107,7 +107,7 @@
     "discordChannelId": null,
     "guildId": "1479080681572274320",
     "redeemed": false,
-    "closed": false,
+    "closed": true,
     "messages": [],
     "createdAt": "2026-03-20T18:09:36.834Z"
   }
