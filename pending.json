@@ -111,5 +111,12 @@
     "webTicketId": "cbdb729ce1eb3c091c7946c9",
     "tier": "free",
     "service": "Test"
+  },
+  "CABEC5": {
+    "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistré ici.",
+    "user": "1112314692258512926",
+    "webTicketId": "d63a9403756317c40a4a93bd",
+    "tier": "free",
+    "service": "Test"
   }
 }
