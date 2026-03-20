@@ -112,7 +112,9 @@
     "staffRoleId": "1484241028310368397",
     "vouchTiers": [],
     "tierRoles": {
-      "free": [],
+      "free": [
+        "1484272629216051473"
+      ],
       "premium": [],
       "paid": []
     }
