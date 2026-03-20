@@ -5,7 +5,7 @@ import {
 } from "discord.js";
 import { readJson, writeJson, readLines, writeLines, listDir } from "./github.js";
 import { GUILDS, FILES, ACCOUNTS_DIR, BOT_SECRET, TIERS, TIER_META,
-         COOLDOWN_LIMITS, loadGuildConfig, getGuild, saveGuildConfig } from "./config.js";
+         COOLDOWN_LIMITS, loadGuildConfig, getGuild } from "./config.js";
 import { channelToTicket } from "./server.js";
 import crypto from "crypto";
 import http from "http";
