@@ -42,5 +42,14 @@
     "isStaff": true,
     "guildId": "1479080681572274320",
     "createdAt": "2026-03-20T18:09:12.284Z"
+  },
+  "25356629dd9a815b10b34035a788df700df81ea1639879ebb2c2c97323743fe4": {
+    "userId": "1112314692258512926",
+    "username": "chevalier5771",
+    "avatar": "c22844c6bba17f8ff0d397161a027fe2",
+    "tier": "extreme",
+    "isStaff": true,
+    "guildId": "1484239591967035585",
+    "createdAt": "2026-03-20T20:45:35.529Z"
   }
 }
