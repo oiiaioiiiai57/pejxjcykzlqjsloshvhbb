@@ -9,6 +9,7 @@ import { GUILDS, FILES, ACCOUNTS_DIR, BOT_SECRET, TIERS, TIER_META,
 import { channelToTicket } from "./server.js";
 import { handlePanel } from "./panel.js";
 import crypto from "crypto";
+import http from "http";
 
 const BACKEND = process.env.BACKEND_URL || "https://pejxjcykzlqjsloshvhbb-production.up.railway.app";
 
@@ -671,6 +672,85 @@ async function handleCommand(interaction, name) {
   }
 }
 
+// ── MINI SERVEUR HTTP INTERNE (pour le bridge server→bot) ────
+import http from "http";
+
+const botHttpServer = http.createServer(async (req, res) => {
+  if (req.method !== "POST" || req.url !== "/bot/create-ticket") {
+    res.writeHead(404); res.end("Not found"); return;
+  }
+  if (req.headers["x-bot-secret"] !== BOT_SECRET) {
+    res.writeHead(403); res.end("Forbidden"); return;
+  }
+
+  let body = "";
+  req.on("data", chunk => body += chunk);
+  req.on("end", async () => {
+    try {
+      const { userId, username, service, tier, code, ticketId, guildId } = JSON.parse(body);
+      const guild = client.guilds.cache.get(String(guildId));
+      if (!guild) { res.writeHead(404); res.end(JSON.stringify({ error: "Guild not found" })); return; }
+
+      const cfg = getCfg(guildId);
+      if (!cfg) { res.writeHead(404); res.end(JSON.stringify({ error: "Config not found" })); return; }
+      if (!cfg.ticketCategory) { res.writeHead(400); res.end(JSON.stringify({ error: "ticketCategory not configured" })); return; }
+
+      const meta = TIER_META[tier] || TIER_META.free;
+      const name = `web-${service.toLowerCase()}-${username.toLowerCase().slice(0,10)}-${Math.floor(Math.random()*9000+1000)}`;
+
+      const category = guild.channels.cache.get(cfg.ticketCategory);
+      if (!category) { res.writeHead(404); res.end(JSON.stringify({ error: `Category ${cfg.ticketCategory} not found in guild` })); return; }
+
+      const ticketCh = await guild.channels.create({
+        name,
+        parent: cfg.ticketCategory,
+        permissionOverwrites: [
+          { id: guild.id,        deny:  [PermissionsBitField.Flags.ViewChannel] },
+          { id: userId,          deny:  [PermissionsBitField.Flags.ViewChannel] }, // web only - pas de vue Discord
+          { id: client.user.id,  allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
+          { id: cfg.staffRole,   allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
+        ],
+      });
+
+      const SITE = process.env.RAILWAY_PUBLIC_DOMAIN
+        ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+        : (process.env.SITE_URL || "https://pejxjcykzlqjsloshvhbb-production.up.railway.app");
+
+      const embed = new EmbedBuilder()
+        .setTitle("🌐  Web Generation Ticket")
+        .setDescription(`**${username}** a généré un compte depuis le site web.`)
+        .setColor(meta.color)
+        .addFields(
+          { name: "👤 Membre",    value: `**${username}**`,                              inline: true  },
+          { name: "📦 Service",   value: `**${service}**`,                               inline: true  },
+          { name: "🏷️ Tier",     value: `${meta.emoji} **${meta.label}**`,              inline: true  },
+          { name: "🔑 Code",      value: `\`\`\`${code}\`\`\``,                         inline: false },
+          { name: "📋 Commande",  value: `\`/redeem ${code}\``,                          inline: false },
+          { name: "🌐 Ticket web",value: `${SITE}/ticket.html?id=${ticketId}`,           inline: false },
+        )
+        .setFooter({ text: "Gen Bot • Web Generation" })
+        .setTimestamp();
+
+      // Ping staff ONLY — pas le membre (il est sur le site)
+      await ticketCh.send({ content: `<@&${cfg.staffRole}>`, embeds: [embed] });
+
+      // Enregistrer le mapping channel → ticket
+      channelToTicket.set(ticketCh.id, ticketId);
+
+      console.log(`✅ Bot created Discord ticket: ${ticketCh.id} (${ticketCh.name})`);
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ channelId: ticketCh.id }));
+    } catch (e) {
+      console.error("Bot create-ticket error:", e);
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+  });
+});
+
 export function startBot() {
+  const BOT_HTTP_PORT = parseInt(process.env.BOT_HTTP_PORT || "3001");
+  botHttpServer.listen(BOT_HTTP_PORT, "127.0.0.1", () => {
+    console.log(`🔌 Bot HTTP bridge listening on :${BOT_HTTP_PORT}`);
+  });
   client.login(process.env.TOKEN).catch(e=>console.error("Bot login failed:", e.message));
 }
