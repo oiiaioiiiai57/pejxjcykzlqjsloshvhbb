@@ -673,7 +673,6 @@ async function handleCommand(interaction, name) {
 }
 
 // ── MINI SERVEUR HTTP INTERNE (pour le bridge server→bot) ────
-import http from "http";
 
 const botHttpServer = http.createServer(async (req, res) => {
   if (req.method !== "POST" || req.url !== "/bot/create-ticket") {
