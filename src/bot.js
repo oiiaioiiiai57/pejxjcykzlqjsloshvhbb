@@ -720,15 +720,23 @@ const botHttpServer = http.createServer(async (req, res) => {
       }
       if (!category) { res.writeHead(404); res.end(JSON.stringify({ error: `Category ${cfg.ticketCategory} not found. Check bot permissions.` })); return; }
 
+      const VIEW_SEND = [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages];
+      const NO_VIEW   = [PermissionsBitField.Flags.ViewChannel];
+      const permOverwrites = [
+        { id: guild.id,               deny:  NO_VIEW   },
+        { id: String(client.user.id), allow: VIEW_SEND },
+        { id: String(cfg.staffRole),  allow: VIEW_SEND },
+      ];
+      // Ajouter le membre seulement s'il est dans le serveur
+      try {
+        const m = await guild.members.fetch(String(userId));
+        if (m) permOverwrites.push({ id: m.id, deny: NO_VIEW });
+      } catch(_) {}
+
       const ticketCh = await guild.channels.create({
         name,
-        parent: cfg.ticketCategory,
-        permissionOverwrites: [
-          { id: guild.id,        deny:  [PermissionsBitField.Flags.ViewChannel] },
-          { id: userId,          deny:  [PermissionsBitField.Flags.ViewChannel] }, // web only - pas de vue Discord
-          { id: client.user.id,  allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
-          { id: cfg.staffRole,   allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
-        ],
+        parent: String(cfg.ticketCategory),
+        permissionOverwrites,
       });
 
       const SITE = process.env.RAILWAY_PUBLIC_DOMAIN
