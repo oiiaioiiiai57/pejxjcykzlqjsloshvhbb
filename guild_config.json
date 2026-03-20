@@ -55,5 +55,24 @@
         "1484241028310368397"
       ]
     }
+  },
+  "1484239591967035585": {
+    "name": "CHEV GEN",
+    "freeChannel": null,
+    "premiumChannel": null,
+    "paidChannel": null,
+    "ticketCategory": null,
+    "logChannel": null,
+    "staffRole": null,
+    "helperRole": null,
+    "addvRole": null,
+    "modRoles": [],
+    "staffRoleId": null,
+    "vouchTiers": [],
+    "tierRoles": {
+      "free": [],
+      "premium": [],
+      "paid": []
+    }
   }
 }
