@@ -9,7 +9,7 @@ const DEFAULT_GUILDS = {
     premiumChannel:   "1479080682616520718",
     boosterChannel:   "1479080682616520717",
     extremeChannel:   "1479080682616520717",
-    ticketCategory:   "1479080682784555134",
+    ticketCategory:   "1484446765900894218",
     logChannel:       "1479239531499880628",
     staffRole:        "1479080681983316004",
     helperRole:       "1479080681983316008",
