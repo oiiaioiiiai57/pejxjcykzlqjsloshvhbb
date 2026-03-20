@@ -268,7 +268,9 @@ async function registerCommands() {
 }
 
 // ── READY ─────────────────────────────────────────────────────
+let botReady = false;
 client.once(Events.ClientReady, async () => {
+  botReady = true;
   console.log(`🤖 Bot online: ${client.user.tag}`);
   client.user.setActivity("/help • Gen Bot");
   await loadGuildConfig();
@@ -687,8 +689,23 @@ const botHttpServer = http.createServer(async (req, res) => {
   req.on("end", async () => {
     try {
       const { userId, username, service, tier, code, ticketId, guildId } = JSON.parse(body);
-      const guild = client.guilds.cache.get(String(guildId));
-      if (!guild) { res.writeHead(404); res.end(JSON.stringify({ error: "Guild not found" })); return; }
+
+      // Attendre que le bot soit prêt (max 15s)
+      let waited = 0;
+      while (!botReady && waited < 15000) {
+        await new Promise(r => setTimeout(r, 300));
+        waited += 300;
+      }
+
+      // Forcer le fetch si pas en cache
+      let guild = client.guilds.cache.get(String(guildId));
+      if (!guild) {
+        try { guild = await client.guilds.fetch(String(guildId)); } catch(e) {
+          console.error("guild.fetch error:", e.message);
+        }
+      }
+      console.log(`[bot-bridge] guildId=${guildId} found=${!!guild} cacheSize=${client.guilds.cache.size}`);
+      if (!guild) { res.writeHead(404); res.end(JSON.stringify({ error: `Guild ${guildId} not found. Cache size: ${client.guilds.cache.size}` })); return; }
 
       const cfg = getCfg(guildId);
       if (!cfg) { res.writeHead(404); res.end(JSON.stringify({ error: "Config not found" })); return; }
