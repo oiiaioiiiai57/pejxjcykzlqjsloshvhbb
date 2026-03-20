@@ -720,18 +720,16 @@ const botHttpServer = http.createServer(async (req, res) => {
       }
       if (!category) { res.writeHead(404); res.end(JSON.stringify({ error: `Category ${cfg.ticketCategory} not found. Check bot permissions.` })); return; }
 
+      // Construire les overwrites — uniquement avec des IDs valides
       const VIEW_SEND = [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages];
       const NO_VIEW   = [PermissionsBitField.Flags.ViewChannel];
+      console.log(`[bot-bridge] staffRole=${cfg.staffRole} botId=${client.user.id} guildId=${guild.id}`);
+
       const permOverwrites = [
-        { id: guild.id,               deny:  NO_VIEW   },
-        { id: String(client.user.id), allow: VIEW_SEND },
-        { id: String(cfg.staffRole),  allow: VIEW_SEND },
+        { id: guild.id, deny: NO_VIEW },
       ];
-      // Ajouter le membre seulement s'il est dans le serveur
-      try {
-        const m = await guild.members.fetch(String(userId));
-        if (m) permOverwrites.push({ id: m.id, deny: NO_VIEW });
-      } catch(_) {}
+      if (client.user?.id) permOverwrites.push({ id: client.user.id, allow: VIEW_SEND });
+      if (cfg.staffRole)   permOverwrites.push({ id: cfg.staffRole,  allow: VIEW_SEND });
 
       const ticketCh = await guild.channels.create({
         name,
