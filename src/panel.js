@@ -289,13 +289,16 @@ export async function handlePanel(interaction) {
     if (!GUILDS[guildId]) return interaction.reply({ content: "❌ Config introuvable.", ephemeral: true });
 
     const cfg = GUILDS[guildId];
-    const f   = (id) => interaction.fields.getTextInputValue(id);
+    const f   = (id) => { try { return interaction.fields.getTextInputValue(id) || ""; } catch(_) { return ""; } };
 
-    if (interaction.customId === "panel_modal_channels") {
+    if (interaction.customId === "panel_modal_channels_gen") {
       if (parseId(f("freeChannel")))    cfg.freeChannel    = parseId(f("freeChannel"));
       if (parseId(f("premiumChannel"))) cfg.premiumChannel = parseId(f("premiumChannel"));
       if (parseId(f("boosterChannel"))) cfg.boosterChannel = parseId(f("boosterChannel"));
-      if (parseId(f("extremeChannel")))  cfg.extremeChannel  = parseId(f("extremeChannel"));
+      if (parseId(f("extremeChannel"))) cfg.extremeChannel = parseId(f("extremeChannel"));
+    }
+
+    if (interaction.customId === "panel_modal_channels_other") {
       if (parseId(f("ticketCategory"))) cfg.ticketCategory = parseId(f("ticketCategory"));
       if (parseId(f("logChannel")))     cfg.logChannel     = parseId(f("logChannel"));
     }
@@ -310,7 +313,7 @@ export async function handlePanel(interaction) {
     }
 
     if (interaction.customId === "panel_modal_tier_roles") {
-      if (!cfg.tierRoles) cfg.tierRoles = { free: [], premium: [], paid: [] };
+      if (!cfg.tierRoles) cfg.tierRoles = { free: [], premium: [], booster: [], extreme: [] };
       const fr = parseIds(f("tierFree"));
       const pr = parseIds(f("tierPremium"));
       const bo = parseIds(f("tierBooster")); const ex = parseIds(f("tierExtreme"));
