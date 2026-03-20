@@ -121,8 +121,16 @@
     "discordChannelId": null,
     "guildId": "1479080681572274320",
     "redeemed": false,
-    "closed": false,
-    "messages": [],
+    "closed": true,
+    "messages": [
+      {
+        "id": 1,
+        "content": "cc",
+        "authorType": "staff",
+        "authorName": "chevalier5771",
+        "timestamp": "2026-03-20T19:18:54.072Z"
+      }
+    ],
     "createdAt": "2026-03-20T19:18:49.398Z"
   }
 }
