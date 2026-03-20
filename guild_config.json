@@ -1,5 +1,5 @@
 {
-  "1484237847401738311": {
+  "1484239591967035585": {
     "name": "Serveur Principal",
     "freeChannel": "1484271275366158447",
     "premiumChannel": "1484278388645560601",
@@ -54,25 +54,6 @@
       "extreme": [
         "1484241028310368397"
       ]
-    }
-  },
-  "1484239591967035585": {
-    "name": "CHEV GEN",
-    "freeChannel": null,
-    "premiumChannel": null,
-    "paidChannel": null,
-    "ticketCategory": null,
-    "logChannel": null,
-    "staffRole": null,
-    "helperRole": null,
-    "addvRole": null,
-    "modRoles": [],
-    "staffRoleId": null,
-    "vouchTiers": [],
-    "tierRoles": {
-      "free": [],
-      "premium": [],
-      "paid": []
     }
   }
 }
