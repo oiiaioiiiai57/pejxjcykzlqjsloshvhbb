@@ -11,9 +11,25 @@ import {
 import crypto from "crypto";
 import { fileURLToPath } from "url";
 import path from "path";
-import { createDiscordTicket, discordSend, discordLog } from "./discord-api.js";
+import { discordSend, discordLog } from "./discord-api.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// ── BOT BRIDGE ────────────────────────────────────────────────
+// Le serveur demande au bot de créer le ticket via une route interne
+async function createTicketViaBot({ userId, username, service, tier, code, ticketId, guildId }) {
+  const res = await fetch(`http://localhost:${process.env.BOT_HTTP_PORT || 3001}/bot/create-ticket`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "X-Bot-Secret": BOT_SECRET },
+    body: JSON.stringify({ userId, username, service, tier, code, ticketId, guildId }),
+  });
+  if (!res.ok) {
+    const t = await res.text();
+    throw new Error(`Bot create-ticket ${res.status}: ${t}`);
+  }
+  const data = await res.json();
+  return data.channelId || null;
+}
 
 // ── EXPRESS SETUP ─────────────────────────────────────────────
 const app    = express();
@@ -306,28 +322,20 @@ app.post("/api/gen", async (req, res) => {
   pending[code]  = { account, user: userId, webTicketId: ticketId, tier: reqTier, service: svcNorm };
   await writeJson(FILES.pending, pending);
 
-  // Reload guild config from GitHub to get latest /panel changes
-  await loadGuildConfig();
-
-  // Create Discord ticket channel
-  const guildCfg = GUILDS[guildId] || GUILDS[String(guildId)];
+  // Demander au bot de créer le ticket Discord (il a les bonnes permissions)
   let discordChannelId = null;
-  console.log(`[gen] guildId=${guildId} guildCfg=${guildCfg ? "found" : "NOT FOUND"} ticketCategory=${guildCfg?.ticketCategory} GUILDS_KEYS=${Object.keys(GUILDS).join(",")}`);
-  if (!guildCfg) {
-    console.error(`Discord ticket error: no config found for guild ${guildId}.`);
-  } else if (!guildCfg.ticketCategory) {
-    console.error(`Discord ticket error: ticketCategory not set for guild ${guildId}`);
-  } else {
-    try {
-      discordChannelId = await createDiscordTicket({
-        userId, username, service: svcNorm, tier: reqTier,
-        code, ticketId, guildCfg, guildId,
-      });
-      if (discordChannelId) channelToTicket.set(discordChannelId, ticketId);
-      console.log(`✅ Discord ticket created: ${discordChannelId} for ticket ${ticketId}`);
-    } catch (e) {
-      console.error("Discord ticket create error:", e.message);
+  try {
+    const botRes = await createTicketViaBot({
+      userId, username, service: svcNorm, tier: reqTier,
+      code, ticketId, guildId,
+    });
+    if (botRes) {
+      discordChannelId = botRes;
+      channelToTicket.set(discordChannelId, ticketId);
+      console.log(`✅ Discord ticket created: ${discordChannelId}`);
     }
+  } catch (e) {
+    console.error("Discord ticket create error:", e.message);
   }
 
   // Store ticket
