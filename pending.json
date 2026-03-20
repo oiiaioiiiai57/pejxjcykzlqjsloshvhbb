@@ -62,5 +62,12 @@
     "webTicketId": "5193dccdfb670e2265c91c07",
     "tier": "free",
     "service": "Test"
+  },
+  "3061F0": {
+    "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistré ici.",
+    "user": "1112314692258512926",
+    "webTicketId": "14566033f692e748c008429c",
+    "tier": "free",
+    "service": "Test"
   }
 }
