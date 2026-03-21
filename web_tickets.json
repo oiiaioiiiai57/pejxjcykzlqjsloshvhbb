@@ -399,5 +399,19 @@
       }
     ],
     "createdAt": "2026-03-21T10:52:30.367Z"
+  },
+  "e07e8ab74127644bb8ca9638": {
+    "userId": "1112314692258512926",
+    "username": "chevalier5771",
+    "service": "Test",
+    "tier": "free",
+    "code": "E8786A",
+    "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistré ici.",
+    "discordChannelId": "1484906573913391256",
+    "guildId": "1484239591967035585",
+    "redeemed": false,
+    "closed": false,
+    "messages": [],
+    "createdAt": "2026-03-21T13:28:35.846Z"
   }
 }
