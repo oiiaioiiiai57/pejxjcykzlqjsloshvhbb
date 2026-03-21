@@ -69,5 +69,14 @@
     "isStaff": true,
     "guildId": "1484239591967035585",
     "createdAt": "2026-03-21T13:29:12.637Z"
+  },
+  "ba4002c4e4e39b6cfe731f3995bb900845125b719c1494ceed06784482aee873": {
+    "userId": "1355482903760339196",
+    "username": "what5656577",
+    "avatar": "53d59efdb7431a7eb89ccda5f3e420b1",
+    "tier": "free",
+    "isStaff": false,
+    "guildId": "1484239591967035585",
+    "createdAt": "2026-03-21T17:58:30.365Z"
   }
 }
