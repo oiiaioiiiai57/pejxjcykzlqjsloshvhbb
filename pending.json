@@ -207,5 +207,11 @@
     "webTicketId": "8fa67b3ccf210d4baacebd2d",
     "tier": "free",
     "service": "Bin"
+  },
+  "2CA2F3": {
+    "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistré ici.",
+    "user": "1355482903760339196",
+    "tier": "free",
+    "service": "Test"
   }
 }
