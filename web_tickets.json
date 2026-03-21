@@ -442,5 +442,19 @@
     "closed": false,
     "messages": [],
     "createdAt": "2026-03-21T17:58:46.591Z"
+  },
+  "8fa67b3ccf210d4baacebd2d": {
+    "userId": "1355482903760339196",
+    "username": "what5656577",
+    "service": "Bin",
+    "tier": "free",
+    "code": "AD0F39",
+    "account": "5154620021104813|05|2030|551",
+    "discordChannelId": "1484974891659952300",
+    "guildId": "1484239591967035585",
+    "redeemed": false,
+    "closed": false,
+    "messages": [],
+    "createdAt": "2026-03-21T18:00:04.196Z"
   }
 }
