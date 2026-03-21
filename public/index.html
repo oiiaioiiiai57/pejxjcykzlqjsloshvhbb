@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gen Bot — Live Stock</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f0f2ff;
+  --bg2: #e8ebff;
+  --surface: #ffffff;
+  --surface2: #f5f7ff;
+  --border: rgba(99,102,241,0.12);
+  --text: #0f0e2e;
+  --muted: #6b7280;
+  --free:    #10b981;
+  --premium: #8b5cf6;
+  --booster: #0ea5e9;
+  --extreme: #ef4444;
+  --free-bg:    rgba(16,185,129,0.08);
+  --premium-bg: rgba(139,92,246,0.08);
+  --booster-bg: rgba(14,165,233,0.08);
+  --extreme-bg: rgba(239,68,68,0.08);
+  --free-border:    rgba(16,185,129,0.3);
+  --premium-border: rgba(139,92,246,0.3);
+  --booster-border: rgba(14,165,233,0.3);
+  --extreme-border: rgba(239,68,68,0.3);
+  --accent: #6366f1;
+  --accent2: #818cf8;
+  --shadow: 0 4px 24px rgba(99,102,241,0.10);
+  --shadow-lg: 0 8px 40px rgba(99,102,241,0.18);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── BACKGROUND DECORATION ── */
+.bg-deco {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.blob {
+  position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35;
+}
+.blob-1 { width:500px;height:500px;top:-100px;left:-100px;background:radial-gradient(circle,#c7d2fe,#a5b4fc); }
+.blob-2 { width:400px;height:400px;bottom:-80px;right:-80px;background:radial-gradient(circle,#bbf7d0,#6ee7b7); }
+.blob-3 { width:300px;height:300px;top:40%;left:60%;background:radial-gradient(circle,#fde68a,#fbbf24);opacity:.2; }
+
+/* ── LAYOUT ── */
+.page { position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:0 24px 80px; }
+
+/* ── NAV ── */
+nav {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:28px 0 52px;
+  animation: slideDown .5s ease both;
+}
+.brand { display:flex;align-items:center;gap:12px;text-decoration:none; }
+.brand-ico {
+  width:44px;height:44px;border-radius:14px;
+  background:linear-gradient(135deg,var(--accent),var(--booster));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;
+  box-shadow: 0 4px 20px rgba(99,102,241,0.4);
+}
+.brand-name {
+  font-size:22px;font-weight:900;letter-spacing:-0.5px;
+  background:linear-gradient(135deg,var(--accent),var(--booster));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+}
+.nav-right { display:flex;align-items:center;gap:10px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display:inline-flex;align-items:center;gap:8px;
+  padding:10px 18px;border-radius:12px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;
+  border:none;text-decoration:none;
+}
+.btn-primary {
+  background:linear-gradient(135deg,var(--accent),var(--booster));
+  color:#fff;box-shadow:0 4px 14px rgba(99,102,241,0.35);
+}
+.btn-primary:hover { transform:translateY(-2px);box-shadow:0 6px 20px rgba(99,102,241,0.45); }
+.btn-secondary {
+  background:var(--surface);color:var(--muted);
+  border:1.5px solid var(--border);box-shadow:var(--shadow);
+}
+.btn-secondary:hover { border-color:rgba(99,102,241,0.3);color:var(--text); }
+.btn-discord {
+  background:linear-gradient(135deg,#5865f2,#7289da);
+  color:#fff;box-shadow:0 4px 14px rgba(88,101,242,0.35);
+}
+.btn-discord:hover { transform:translateY(-2px);box-shadow:0 6px 20px rgba(88,101,242,0.5); }
+.btn-discord svg { width:18px;height:18px;fill:#fff; }
+
+/* ── USER PILL ── */
+.user-pill {
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:100px;padding:5px 14px 5px 5px;
+  box-shadow:var(--shadow);
+}
+.user-avatar { width:28px;height:28px;border-radius:50%;object-fit:cover; }
+.user-name { font-size:13px;font-weight:600; }
+.tier-chip {
+  font-size:10px;font-weight:700;letter-spacing:1.5px;
+  padding:3px 9px;border-radius:100px;font-family:'Space Mono',monospace;
+}
+.tier-chip.free    { background:var(--free-bg);color:var(--free);border:1.5px solid var(--free-border); }
+.tier-chip.premium { background:var(--premium-bg);color:var(--premium);border:1.5px solid var(--premium-border); }
+.tier-chip.booster { background:var(--booster-bg);color:var(--booster);border:1.5px solid var(--booster-border); }
+.tier-chip.extreme { background:var(--extreme-bg);color:var(--extreme);border:1.5px solid var(--extreme-border); }
+.btn-logout {
+  background:none;border:none;color:var(--muted);cursor:pointer;
+  font-size:16px;padding:2px 4px;transition:color .2s;line-height:1;
+}
+.btn-logout:hover { color:var(--extreme); }
+
+/* ── HERO ── */
+.hero {
+  text-align:center;padding-bottom:60px;
+  animation:fadeUp .6s ease .1s both;
+}
+.hero-eyebrow {
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(14,165,233,0.1));
+  border:1.5px solid rgba(99,102,241,0.2);
+  border-radius:100px;padding:6px 16px;
+  font-size:11px;font-family:'Space Mono',monospace;
+  color:var(--accent);letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:24px;
+}
+.live-dot {
+  width:7px;height:7px;border-radius:50%;
+  background:var(--free);
+  box-shadow:0 0 0 3px rgba(16,185,129,0.2);
+  animation:pulse 2s ease-in-out infinite;
+}
+.hero h1 {
+  font-size:clamp(52px,9vw,96px);
+  font-weight:900;line-height:.9;
+  letter-spacing:-3px;margin-bottom:20px;
+}
+.hero h1 .line1 { color:var(--text); }
+.hero h1 .line2 {
+  background:linear-gradient(90deg,var(--accent),var(--booster),var(--free));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-size:200% auto;
+  animation:gradientShift 4s linear infinite;
+}
+.hero p { color:var(--muted);font-size:16px;max-width:440px;margin:0 auto;line-height:1.7;font-weight:400; }
+
+/* ── STATS ── */
+.stats-row {
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  margin-bottom:36px;animation:fadeUp .6s ease .15s both;
+}
+.stat-card {
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:18px;padding:20px 22px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.stat-card:hover { transform:translateY(-3px);box-shadow:var(--shadow-lg); }
+.stat-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--top-line);border-radius:3px 3px 0 0;
+}
+.stat-card:nth-child(1){--top-line:linear-gradient(90deg,var(--free),#34d399);}
+.stat-card:nth-child(2){--top-line:linear-gradient(90deg,var(--accent),var(--premium));}
+.stat-card:nth-child(3){--top-line:linear-gradient(90deg,var(--booster),#38bdf8);}
+.stat-card:nth-child(4){--top-line:linear-gradient(90deg,#f59e0b,#fbbf24);}
+.stat-ico { font-size:20px;margin-bottom:10px; }
+.stat-num { font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1; }
+.stat-lbl { font-size:11px;color:var(--muted);margin-top:4px;font-weight:500;letter-spacing:.5px; }
+
+/* ── CARDS ── */
+.card {
+  background:var(--surface);border:1.5px solid var(--border);
+  border-radius:20px;box-shadow:var(--shadow);
+  position:relative;overflow:hidden;
+}
+.card-accent::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),var(--booster),var(--free),var(--extreme));
+}
+
+/* ── LOGIN PROMPT ── */
+.login-card {
+  padding:44px;text-align:center;
+  margin-bottom:28px;animation:fadeUp .6s ease .2s both;
+}
+.login-card h2 { font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:10px; }
+.login-card p { color:var(--muted);font-size:15px;margin-bottom:28px;line-height:1.6; }
+.login-big {
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#5865f2,#7289da);
+  color:#fff;padding:14px 32px;border-radius:14px;
+  font-size:15px;font-weight:700;text-decoration:none;
+  box-shadow:0 6px 24px rgba(88,101,242,0.4);
+  transition:all .2s;font-family:'Outfit',sans-serif;
+}
+.login-big:hover { transform:translateY(-3px);box-shadow:0 10px 32px rgba(88,101,242,0.5); }
+.login-big svg { width:22px;height:22px;fill:#fff; }
+
+/* ── GEN PANEL ── */
+.gen-card {
+  padding:28px 32px 32px;margin-bottom:28px;
+  animation:fadeUp .6s ease .2s both;
+}
+.gen-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:20px; }
+.gen-title { font-size:20px;font-weight:800;letter-spacing:-0.3px; }
+.gen-sub { font-size:12px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:3px; }
+.gen-form { display:grid;grid-template-columns:1fr 1fr auto;gap:12px;align-items:end; }
+.form-group { display:flex;flex-direction:column;gap:6px; }
+.form-label {
+  font-size:10px;font-weight:700;color:var(--muted);
+  letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;
+}
+.form-select {
+  background:var(--surface2);border:1.5px solid var(--border);
+  color:var(--text);padding:11px 36px 11px 14px;
+  border-radius:12px;font-size:14px;font-family:'Outfit',sans-serif;
+  font-weight:500;outline:none;transition:all .2s;
+  appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+}
+.form-select:focus { border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,0.15); }
+.btn-gen {
+  background:linear-gradient(135deg,var(--accent),var(--booster));
+  border:none;color:#fff;padding:12px 26px;border-radius:12px;
+  font-size:14px;font-weight:700;cursor:pointer;
+  font-family:'Outfit',sans-serif;
+  box-shadow:0 4px 14px rgba(99,102,241,0.35);
+  transition:all .2s;letter-spacing:.3px;white-space:nowrap;
+}
+.btn-gen:hover { transform:translateY(-2px);box-shadow:0 6px 20px rgba(99,102,241,0.45); }
+.btn-gen:disabled { opacity:.45;cursor:not-allowed;transform:none; }
+
+.gen-result { margin-top:16px;display:none;border-radius:14px;padding:16px 20px; }
+.gen-result.show { display:block; }
+.gen-result.success { background:rgba(16,185,129,0.06);border:1.5px solid rgba(16,185,129,0.25); }
+.gen-result.error   { background:rgba(239,68,68,0.06);border:1.5px solid rgba(239,68,68,0.25); }
+.gen-result-tag { font-size:10px;font-family:'Space Mono',monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-weight:700; }
+.gen-result-tag.s { color:var(--free); }
+.gen-result-tag.e { color:var(--extreme); }
+.acc-row {
+  font-family:'Space Mono',monospace;font-size:13px;color:var(--free);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;word-break:break-all;
+  background:rgba(16,185,129,0.05);padding:10px 14px;border-radius:8px;
+}
+.copy-btn {
+  background:rgba(16,185,129,0.12);border:1.5px solid rgba(16,185,129,0.3);
+  color:var(--free);padding:5px 12px;border-radius:8px;
+  font-size:11px;cursor:pointer;font-family:'Space Mono',monospace;
+  font-weight:700;transition:all .15s;flex-shrink:0;
+}
+.copy-btn:hover { background:rgba(16,185,129,0.22); }
+.err-msg { font-family:'Space Mono',monospace;font-size:13px;color:var(--extreme); }
+
+/* ── TIER TABS ── */
+.stock-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:16px; }
+.section-title { font-size:22px;font-weight:800;letter-spacing:-0.5px; }
+.tier-tabs { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px; }
+.tab {
+  padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .2s;font-family:'Space Mono',monospace;
+  letter-spacing:.5px;border:1.5px solid transparent;
+  background:var(--surface);color:var(--muted);box-shadow:var(--shadow);
+}
+.tab:hover { border-color:var(--border); }
+.tab.active.free    { background:var(--free-bg);color:var(--free);border-color:var(--free-border); }
+.tab.active.premium { background:var(--premium-bg);color:var(--premium);border-color:var(--premium-border); }
+.tab.active.booster { background:var(--booster-bg);color:var(--booster);border-color:var(--booster-border); }
+.tab.active.extreme { background:var(--extreme-bg);color:var(--extreme);border-color:var(--extreme-border); }
+.tab.active.all     { background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(14,165,233,0.1));color:var(--accent);border-color:rgba(99,102,241,0.3); }
+
+/* ── STOCK GRID ── */
+.stock-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px; }
+.svc-card {
+  background:var(--surface);border-radius:16px;padding:20px;
+  transition:all .2s;position:relative;overflow:hidden;
+  box-shadow:var(--shadow);
+}
+.svc-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0;
+}
+.svc-card.free::before    { background:linear-gradient(90deg,var(--free),#34d399); }
+.svc-card.premium::before { background:linear-gradient(90deg,var(--premium),#a78bfa); }
+.svc-card.booster::before { background:linear-gradient(90deg,var(--booster),#38bdf8); }
+.svc-card.extreme::before { background:linear-gradient(90deg,var(--extreme),#f87171); }
+.svc-card:hover { transform:translateY(-4px);box-shadow:var(--shadow-lg); }
+.svc-card.free:hover    { border:1.5px solid var(--free-border); }
+.svc-card.premium:hover { border:1.5px solid var(--premium-border); }
+.svc-card.booster:hover { border:1.5px solid var(--booster-border); }
+.svc-card.extreme:hover { border:1.5px solid var(--extreme-border); }
+.svc-card { border:1.5px solid var(--border); }
+.svc-name { font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px; }
+.svc-count { font-size:36px;font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:10px; }
+.svc-count.free    { color:var(--free); }
+.svc-count.premium { color:var(--premium); }
+.svc-count.booster { color:var(--booster); }
+.svc-count.extreme { color:var(--extreme); }
+.svc-count.out     { font-size:14px;font-weight:700;color:var(--extreme); }
+.bar-track { height:4px;background:rgba(0,0,0,0.06);border-radius:10px;overflow:hidden; }
+.bar-fill  { height:100%;border-radius:10px;transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+.bar-fill.free    { background:linear-gradient(90deg,var(--free),#34d399); }
+.bar-fill.premium { background:linear-gradient(90deg,var(--premium),#a78bfa); }
+.bar-fill.booster { background:linear-gradient(90deg,var(--booster),#38bdf8); }
+.bar-fill.extreme { background:linear-gradient(90deg,var(--extreme),#f87171); }
+
+.empty-state { text-align:center;padding:48px;color:var(--muted);grid-column:1/-1;font-size:14px; }
+
+/* ── REFRESH BTN ── */
+.refresh-btn {
+  display:flex;align-items:center;gap:6px;
+  background:var(--surface);border:1.5px solid var(--border);
+  color:var(--muted);padding:9px 16px;border-radius:10px;
+  font-size:12px;font-family:'Space Mono',monospace;
+  cursor:pointer;transition:all .2s;box-shadow:var(--shadow);
+}
+.refresh-btn:hover { border-color:rgba(99,102,241,0.3);color:var(--text); }
+.refresh-btn.spin .ico { animation:spin .7s linear infinite; }
+.ico { display:inline-block; }
+
+/* ── NOT IN SERVER ── */
+.not-in-server { padding:44px;text-align:center; }
+.not-in-server h2 { font-size:26px;font-weight:800;margin-bottom:10px; }
+.not-in-server p  { color:var(--muted);font-size:14px;margin-bottom:28px;line-height:1.6; }
+
+footer {
+  text-align:center;padding-top:56px;
+  color:var(--muted);font-size:12px;font-family:'Space Mono',monospace;
+}
+footer a { color:var(--accent);text-decoration:none; }
+footer a:hover { text-decoration:underline; }
+
+@keyframes slideDown { from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp    { from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)} }
+@keyframes pulse     { 0%,100%{box-shadow:0 0 0 3px rgba(16,185,129,.2)}50%{box-shadow:0 0 0 6px rgba(16,185,129,.05)} }
+@keyframes spin      { to{transform:rotate(360deg)} }
+@keyframes gradientShift { to{background-position:200% center} }
+
+@media(max-width:700px){
+  .stats-row { grid-template-columns:1fr 1fr; }
+  .gen-form  { grid-template-columns:1fr 1fr; }
+  .btn-gen   { grid-column:span 2; }
+}
+@media(max-width:480px){
+  .gen-form { grid-template-columns:1fr; }
+  .btn-gen  { grid-column:span 1; }
+}
+</style>
+</head>
+<body>
+<div class="bg-deco">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="page">
+  <nav>
+    <a class="brand" href="/">
+      <div class="brand-ico">⚡</div>
+      <span class="brand-name">GEN BOT</span>
+    </a>
+    <div class="nav-right">
+      <a href="/profile.html" id="profileLink" class="btn btn-secondary" style="display:none">👤 Profile</a>
+      <button class="refresh-btn" onclick="loadStock()"><span class="ico">↻</span> Refresh</button>
+      <div id="authZone">
+        <a class="btn btn-discord" href="/auth/login">
+          <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+          Login with Discord
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow"><div class="live-dot"></div> Live Stock Feed</div>
+    <h1>
+      <div class="line1">ACCOUNT</div>
+      <div class="line2">GENERATOR</div>
+    </h1>
+    <p>Login with Discord to generate accounts based on your server role.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-ico">📦</div><div class="stat-num" id="statAccounts">—</div><div class="stat-lbl">Total Accounts</div></div>
+    <div class="stat-card"><div class="stat-ico">🗂️</div><div class="stat-num" id="statServices">—</div><div class="stat-lbl">Services</div></div>
+    <div class="stat-card"><div class="stat-ico">⚡</div><div class="stat-num" id="statGens">—</div><div class="stat-lbl">Total Gens</div></div>
+    <div class="stat-card"><div class="stat-ico">🕒</div><div class="stat-num" id="statTime" style="font-size:18px;letter-spacing:0">—</div><div class="stat-lbl">Last Refresh</div></div>
+  </div>
+
+  <!-- Login prompt -->
+  <div id="loginPrompt" class="card card-accent login-card">
+    <h2>🔐 Login Required</h2>
+    <p>Connect your Discord account to generate based on your server role.</p>
+    <a class="login-big" href="/auth/login">
+      <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+      Login with Discord
+    </a>
+  </div>
+
+  <!-- Gen panel -->
+  <div id="genPanel" class="card card-accent gen-card" style="display:none">
+    <div class="gen-header">
+      <div>
+        <div class="gen-title">⚡ Generate Account</div>
+        <div class="gen-sub" id="genSub">Select a tier and service</div>
+      </div>
+    </div>
+    <div class="gen-form">
+      <div class="form-group">
+        <label class="form-label">Tier</label>
+        <select class="form-select" id="genTier" onchange="onTierChange()">
+          <option value="free">🟢 Free</option>
+          <option value="premium">🟣 Premium</option>
+          <option value="booster">🔵 Booster</option>
+          <option value="extreme">🔴 Extreme</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service</label>
+        <select class="form-select" id="genService"><option value="">— Loading... —</option></select>
+      </div>
+      <button class="btn-gen" id="genBtn" onclick="doGen()">⚡ Generate</button>
+    </div>
+    <div class="gen-result" id="genResult">
+      <div class="gen-result-tag s" id="genTag">Account Generated</div>
+      <div id="genContent"></div>
+    </div>
+  </div>
+
+  <!-- Stock -->
+  <div class="stock-header">
+    <div class="section-title">📦 Live Stock</div>
+    <div style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1.5px">AUTO-REFRESH 60s</div>
+  </div>
+
+  <div class="tier-tabs" id="tierTabs">
+    <button class="tab active free"    onclick="filterTier('free')">🟢 FREE</button>
+    <button class="tab premium"        onclick="filterTier('premium')">🟣 PREMIUM</button>
+    <button class="tab booster"        onclick="filterTier('booster')">🔵 BOOSTER</button>
+    <button class="tab extreme"        onclick="filterTier('extreme')">🔴 EXTREME</button>
+    <button class="tab"                onclick="filterTier('all')">⬜ ALL</button>
+  </div>
+
+  <div id="stockGrid" class="stock-grid"></div>
+
+  <footer>
+    <p><a href="https://discord.gg/3q2uYRdrW3" target="_blank">Join our Discord</a> to get access to generations</p>
+    <p style="margin-top:6px;opacity:.6">Secured by Discord OAuth2 · Gen Bot v2</p>
+  </footer>
+</div>
+
+<script>
+const TIERS = ["free","premium","booster","extreme"];
+const TIER_LABELS = { free:"Free", premium:"Premium", booster:"Booster", extreme:"Extreme" };
+const TOKEN = (() => {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get("error") === "not_in_server") setTimeout(showNoRole, 100);
+  const t = p.get("token");
+  if (t) { localStorage.setItem("session_token", t); window.history.replaceState({}, "", "/"); return t; }
+  return localStorage.getItem("session_token");
+})();
+
+let stockData = {}, currentTier = "free", sessionToken = TOKEN, currentUser = null;
+
+function svcIcon(n) {
+  n = n.toLowerCase();
+  if(n.includes("netflix"))return"🎬"; if(n.includes("spotify"))return"🎵";
+  if(n.includes("disney"))return"🏰";  if(n.includes("crunchyroll"))return"⛩️";
+  if(n.includes("adobe"))return"🎨";   if(n.includes("xbox"))return"🎮";
+  if(n.includes("minecraft"))return"⛏️"; if(n.includes("steam"))return"🖥️";
+  if(n.includes("dazn"))return"⚽";    if(n.includes("hbo"))return"🎭";
+  if(n.includes("prime"))return"📦";   if(n.includes("youtube"))return"▶️";
+  return "📋";
+}
+
+async function checkAuth() {
+  if (!sessionToken) { showLoggedOut(); return; }
+  try {
+    const r = await fetch("/auth/me", { headers: {"X-Session-Token": sessionToken} });
+    if (!r.ok) { logout(true); return; }
+    currentUser = await r.json();
+    showLoggedIn(currentUser);
+  } catch { showLoggedOut(); }
+}
+
+function showLoggedIn(u) {
+  const tier = u.tier || "none";
+  const avatarUrl = u.avatar
+    ? `https://cdn.discordapp.com/avatars/${u.userId}/${u.avatar}.png?size=64`
+    : "https://cdn.discordapp.com/embed/avatars/0.png";
+
+  document.getElementById("authZone").innerHTML = `
+    <div class="user-pill">
+      <img class="user-avatar" src="${avatarUrl}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+      <span class="user-name">${u.username}</span>
+      ${tier !== "none" ? `<span class="tier-chip ${tier}">${TIER_LABELS[tier]?.toUpperCase()||tier.toUpperCase()}</span>` : ""}
+      <button class="btn-logout" onclick="logout()" title="Logout">✕</button>
+    </div>`;
+
+  document.getElementById("profileLink").style.display = "flex";
+  document.getElementById("loginPrompt").style.display = "none";
+
+  if (!tier || tier === "none") { showNoRole(); return; }
+
+  document.getElementById("genPanel").style.display = "block";
+  document.getElementById("genSub").textContent = `Logged in as ${u.username} · ${TIER_LABELS[tier]||tier}`;
+
+  const order = { free:0, premium:1, booster:2, extreme:3 };
+  const userLevel = order[tier] ?? -1;
+  document.querySelectorAll("#genTier option").forEach(opt => {
+    opt.disabled = (order[opt.value] ?? 0) > userLevel;
+  });
+  document.getElementById("genTier").value = tier;
+  onTierChange();
+}
+
+function showLoggedOut() {
+  document.getElementById("loginPrompt").style.display = "block";
+  document.getElementById("genPanel").style.display = "none";
+  document.getElementById("profileLink").style.display = "none";
+}
+
+function showNoRole() {
+  document.getElementById("genPanel").style.display = "none";
+  document.getElementById("loginPrompt").style.display = "block";
+  document.getElementById("loginPrompt").innerHTML = `
+    <div class="not-in-server">
+      <h2>❌ Access Denied</h2>
+      <p>You don't have the required role on the Discord server.<br>Join the server and get a role to start generating.</p>
+      <a class="login-big" href="https://discord.gg/3q2uYRdrW3" target="_blank">
+        <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:#fff"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+        Join the Discord
+      </a>
+    </div>`;
+}
+
+function logout(silent=false) {
+  if (!silent) fetch("/auth/logout",{method:"POST",headers:{"X-Session-Token":sessionToken}}).catch(()=>{});
+  localStorage.removeItem("session_token");
+  sessionToken=null; currentUser=null;
+  document.getElementById("authZone").innerHTML = `<a class="btn btn-discord" href="/auth/login"><svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>Login with Discord</a>`;
+  showLoggedOut();
+}
+
+async function loadStock() {
+  const btn = document.querySelector(".refresh-btn");
+  btn.classList.add("spin");
+  try {
+    const [sr, gr] = await Promise.all([fetch("/api/stock"), fetch("/api/stats")]);
+    const sd = await sr.json(); const gd = await gr.json();
+    stockData = sd.tiers || {};
+    renderStock(currentTier);
+    onTierChange();
+    document.getElementById("statGens").textContent = ((gd.total_gens||0)+(gd.web_gens||0)).toLocaleString();
+  } catch { document.getElementById("stockGrid").innerHTML = `<div class="empty-state">⚠️ Could not load stock</div>`; }
+  finally { btn.classList.remove("spin"); }
+}
+
+function filterTier(t) {
+  currentTier = t;
+  document.querySelectorAll(".tab").forEach(el => {
+    const tierMap = { free:"🟢 FREE", premium:"🟣 PREMIUM", booster:"🔵 BOOSTER", extreme:"🔴 EXTREME", all:"⬜ ALL" };
+    const match = el.textContent.trim() === (tierMap[t]||"");
+    el.className = `tab${match ? ` active ${t}` : ""}`;
+  });
+  renderStock(t);
+}
+
+function renderStock(filter) {
+  const grid = document.getElementById("stockGrid");
+  const tiers = filter === "all" ? TIERS : [filter];
+  let totalA=0, totalS=0; grid.innerHTML="";
+
+  for (const tier of tiers) {
+    const svcs = stockData[tier]||[];
+    totalS += svcs.length;
+    if (!svcs.length && filter !== "all") {
+      grid.innerHTML = `<div class="empty-state">📭 No services available for ${TIER_LABELS[tier]||tier}</div>`;
+      continue;
+    }
+    const maxC = Math.max(...svcs.map(s=>s.count),1);
+    for (const svc of svcs) {
+      totalA += svc.count;
+      const pct = Math.round((svc.count/maxC)*100);
+      const card = document.createElement("div");
+      card.className = `svc-card ${tier}`;
+      card.innerHTML = `
+        <div class="svc-name">${svcIcon(svc.name)} ${svc.name}</div>
+        <div class="${svc.count===0?"svc-count out":`svc-count ${tier}`}">${svc.count===0?"OUT OF STOCK":svc.count.toLocaleString()}</div>
+        <div class="bar-track"><div class="bar-fill ${tier}" data-w="${pct}" style="width:0%"></div></div>`;
+      grid.appendChild(card);
+    }
+  }
+  document.getElementById("statAccounts").textContent = totalA.toLocaleString();
+  document.getElementById("statServices").textContent = totalS;
+  document.getElementById("statTime").textContent = new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  requestAnimationFrame(()=>{
+    document.querySelectorAll(".bar-fill[data-w]").forEach(el=>{
+      setTimeout(()=>{ el.style.width=el.dataset.w+"%"; },80);
+    });
+  });
+}
+
+function onTierChange() {
+  const tier = document.getElementById("genTier").value;
+  const svcs = (stockData[tier]||[]).filter(s=>s.count>0);
+  document.getElementById("genService").innerHTML = svcs.length
+    ? svcs.map(s=>`<option value="${s.name}">${svcIcon(s.name)} ${s.name} (${s.count})</option>`).join("")
+    : `<option value="">— Out of stock —</option>`;
+}
+
+async function doGen() {
+  const tier=document.getElementById("genTier").value, service=document.getElementById("genService").value;
+  const btn=document.getElementById("genBtn"), result=document.getElementById("genResult");
+  if (!service||!sessionToken) return;
+  btn.disabled=true; btn.innerHTML=`<span class="ico" style="animation:spin .7s linear infinite">↻</span> Generating...`;
+  result.className="gen-result"; result.style.display="none";
+  try {
+    const r=await fetch("/api/gen",{method:"POST",headers:{"Content-Type":"application/json","X-Session-Token":sessionToken},body:JSON.stringify({tier,service})});
+    const d=await r.json();
+    if (!r.ok) {
+      document.getElementById("genTag").className="gen-result-tag e";
+      document.getElementById("genTag").textContent="Error";
+      document.getElementById("genContent").innerHTML=`<div class="err-msg">❌ ${d.error}</div>`;
+      result.className="gen-result error show"; result.style.display="block";
+    } else { loadStock(); window.location.href=`/ticket.html?id=${d.ticketId}`; }
+  } finally { btn.disabled=false; btn.innerHTML="⚡ Generate"; }
+}
+
+checkAuth(); loadStock(); setInterval(loadStock,60000);
+</script>
+</body>
+</html>

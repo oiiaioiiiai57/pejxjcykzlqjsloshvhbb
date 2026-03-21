@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gen Bot — Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f2ff;--surface:#fff;--surface2:#f5f7ff;
+  --border:rgba(99,102,241,.12);--text:#0f0e2e;--muted:#6b7280;
+  --free:#10b981;--premium:#8b5cf6;--booster:#0ea5e9;--extreme:#ef4444;
+  --accent:#6366f1;--shadow:0 4px 24px rgba(99,102,241,.10);--shadow-lg:0 8px 40px rgba(99,102,241,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;}
+.bg-deco{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.blob{position:absolute;border-radius:50%;filter:blur(80px);opacity:.3;}
+.blob-1{width:500px;height:500px;top:-100px;left:-100px;background:radial-gradient(circle,#c7d2fe,#a5b4fc);}
+.blob-2{width:400px;height:400px;bottom:-80px;right:-80px;background:radial-gradient(circle,#bbf7d0,#6ee7b7);}
+.page{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:28px 24px 80px;}
+
+nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;}
+.brand{font-size:20px;font-weight:900;letter-spacing:-0.5px;text-decoration:none;background:linear-gradient(135deg,var(--accent),var(--booster));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.btn-back{display:flex;align-items:center;gap:6px;background:var(--surface);border:1.5px solid var(--border);color:var(--muted);padding:9px 16px;border-radius:10px;font-size:13px;text-decoration:none;transition:all .2s;box-shadow:var(--shadow);font-weight:500;}
+.btn-back:hover{border-color:rgba(99,102,241,.3);color:var(--text);}
+
+.profile-card{background:var(--surface);border:1.5px solid var(--border);border-radius:24px;padding:32px;display:flex;align-items:center;gap:24px;margin-bottom:28px;box-shadow:var(--shadow);position:relative;overflow:hidden;animation:fadeUp .5s ease both;}
+.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--free),var(--booster),var(--premium),var(--extreme));border-radius:4px 4px 0 0;}
+.avatar{width:80px;height:80px;border-radius:50%;border:3px solid rgba(99,102,241,.2);box-shadow:0 4px 20px rgba(99,102,241,.2);}
+.profile-name{font-size:30px;font-weight:900;letter-spacing:-1px;margin-bottom:10px;}
+.profile-tags{display:flex;gap:8px;flex-wrap:wrap;}
+.ptag{font-size:10px;font-weight:700;letter-spacing:1.5px;padding:4px 10px;border-radius:100px;font-family:'Space Mono',monospace;}
+.ptag.free   {background:rgba(16,185,129,.1);color:var(--free);border:1.5px solid rgba(16,185,129,.3);}
+.ptag.premium{background:rgba(139,92,246,.1);color:var(--premium);border:1.5px solid rgba(139,92,246,.3);}
+.ptag.booster{background:rgba(14,165,233,.1);color:var(--booster);border:1.5px solid rgba(14,165,233,.3);}
+.ptag.extreme{background:rgba(239,68,68,.1);color:var(--extreme);border:1.5px solid rgba(239,68,68,.3);}
+.ptag.staff  {background:rgba(245,158,11,.1);color:#f59e0b;border:1.5px solid rgba(245,158,11,.3);}
+
+.section-title{font-size:20px;font-weight:800;letter-spacing:-0.3px;margin:28px 0 14px;}
+
+.gen-list{display:flex;flex-direction:column;gap:10px;}
+.gen-item{
+  background:var(--surface);border:1.5px solid var(--border);border-radius:16px;
+  padding:16px 22px;display:grid;grid-template-columns:1fr auto;gap:10px;
+  align-items:center;transition:all .2s;box-shadow:var(--shadow);
+  animation:fadeUp .5s ease both;
+}
+.gen-item:hover{transform:translateX(5px);box-shadow:var(--shadow-lg);}
+.gen-svc{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.gen-acc{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:380px;}
+.gen-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.gen-tier{font-size:10px;font-weight:700;letter-spacing:1.5px;padding:3px 10px;border-radius:100px;font-family:'Space Mono',monospace;}
+.gen-tier.free   {background:rgba(16,185,129,.1);color:var(--free);}
+.gen-tier.premium{background:rgba(139,92,246,.1);color:var(--premium);}
+.gen-tier.booster{background:rgba(14,165,233,.1);color:var(--booster);}
+.gen-tier.extreme{background:rgba(239,68,68,.1);color:var(--extreme);}
+.gen-date{font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;}
+.gen-action{font-size:11px;font-weight:600;background:var(--surface2);border:1.5px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .15s;text-decoration:none;}
+.gen-action:hover{color:var(--accent);border-color:rgba(99,102,241,.3);}
+.pending-text{font-size:11px;color:#f59e0b;font-style:italic;font-family:'Space Mono',monospace;}
+.empty-box{text-align:center;padding:48px;color:var(--muted);font-size:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:16px;box-shadow:var(--shadow);}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div class="bg-deco"><div class="blob blob-1"></div><div class="blob blob-2"></div></div>
+<div class="page">
+  <nav>
+    <a class="brand" href="/">⚡ GEN BOT</a>
+    <a class="btn-back" href="/">← Back</a>
+  </nav>
+
+  <div class="profile-card" id="profileCard">
+    <div style="color:var(--muted)">Loading...</div>
+  </div>
+
+  <div class="section-title">📦 Generation History</div>
+  <div class="gen-list" id="genList"><div class="empty-box">Loading...</div></div>
+</div>
+
+<script>
+const TOKEN = localStorage.getItem("session_token");
+const TIER_LABELS = { free:"Free", premium:"Premium", booster:"Booster", extreme:"Extreme" };
+if (!TOKEN) window.location.href = "/";
+
+function svcIcon(n){
+  n=n.toLowerCase();
+  if(n.includes("netflix"))return"🎬"; if(n.includes("spotify"))return"🎵";
+  if(n.includes("disney"))return"🏰";  if(n.includes("crunchyroll"))return"⛩️";
+  if(n.includes("adobe"))return"🎨";   if(n.includes("xbox"))return"🎮";
+  if(n.includes("dazn"))return"⚽";    if(n.includes("steam"))return"🖥️";
+  return"📋";
+}
+function fmtDate(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString("en-US",{month:"short",day:"2-digit",year:"2-digit"})+" "+
+         d.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+}
+let revealed={};
+
+async function load(){
+  try {
+    const r=await fetch("/api/profile",{headers:{"X-Session-Token":TOKEN}});
+    if(!r.ok){window.location.href="/";return;}
+    const data=await r.json();
+
+    const avatarUrl=data.avatar
+      ?`https://cdn.discordapp.com/avatars/${data.userId}/${data.avatar}.png?size=128`
+      :"https://cdn.discordapp.com/embed/avatars/0.png";
+
+    document.getElementById("profileCard").innerHTML=`
+      <img class="avatar" src="${avatarUrl}" onerror="this.src='https://cdn.discordapp.com/embed/avatars/0.png'">
+      <div>
+        <div class="profile-name">${data.username}</div>
+        <div class="profile-tags">
+          ${data.tier?`<span class="ptag ${data.tier}">${TIER_LABELS[data.tier]||data.tier}</span>`:""}
+          ${data.isStaff?`<span class="ptag staff">⚔️ STAFF</span>`:""}
+        </div>
+      </div>`;
+
+    const list=document.getElementById("genList");
+    const history=data.genHistory||[];
+    if(!history.length){list.innerHTML='<div class="empty-box">📭 No generations yet.</div>';return;}
+
+    list.innerHTML="";
+    history.forEach((e,i)=>{
+      const hasAcc=!!e.account;
+      const accDisplay=hasAcc
+        ?(revealed[i]
+          ?`<span style="color:var(--free);font-family:'Space Mono',monospace">${e.account}</span>`
+          :"••••••••••••••••••")
+        :`<span class="pending-text">⏳ Waiting for staff validation...</span>`;
+
+      const div=document.createElement("div");
+      div.className="gen-item";
+      div.style.animationDelay=`${i*0.04}s`;
+      div.innerHTML=`
+        <div>
+          <div class="gen-svc">${svcIcon(e.service)} ${e.service}</div>
+          <div class="gen-acc">${accDisplay}</div>
+        </div>
+        <div class="gen-right">
+          <span class="gen-tier ${e.tier}">${TIER_LABELS[e.tier]||e.tier}</span>
+          <span class="gen-date">${fmtDate(e.date)}</span>
+          ${hasAcc
+            ?`<button class="gen-action" onclick="toggleReveal(${i})">${revealed[i]?"Hide":"Reveal"}</button>`
+            :`<a class="gen-action" href="/ticket.html?id=${e.ticketId}">View Ticket →</a>`}
+        </div>`;
+      list.appendChild(div);
+    });
+  } catch{document.getElementById("genList").innerHTML='<div class="empty-box">Failed to load.</div>';}
+}
+
+function toggleReveal(i){revealed[i]=!revealed[i];load();}
+load();
+</script>
+</body>
+</html>
