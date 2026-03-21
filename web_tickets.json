@@ -409,9 +409,24 @@
     "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistré ici.",
     "discordChannelId": "1484906573913391256",
     "guildId": "1484239591967035585",
-    "redeemed": false,
+    "redeemed": true,
     "closed": false,
-    "messages": [],
+    "messages": [
+      {
+        "id": 1,
+        "content": "lol",
+        "authorType": "staff",
+        "authorName": "chevalier5771",
+        "timestamp": "2026-03-21T13:28:41.236Z"
+      },
+      {
+        "id": 2,
+        "content": "att",
+        "authorType": "staff",
+        "authorName": "chevalier577",
+        "timestamp": "2026-03-21T13:29:25.458Z"
+      }
+    ],
     "createdAt": "2026-03-21T13:28:35.846Z"
   }
 }
