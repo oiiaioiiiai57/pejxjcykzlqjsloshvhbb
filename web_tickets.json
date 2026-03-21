@@ -381,8 +381,23 @@
     "discordChannelId": "1484867292092301432",
     "guildId": "1484239591967035585",
     "redeemed": true,
-    "closed": false,
-    "messages": [],
+    "closed": true,
+    "messages": [
+      {
+        "id": 1,
+        "content": "Mrcc",
+        "authorType": "staff",
+        "authorName": "chevalier5771",
+        "timestamp": "2026-03-21T10:53:51.869Z"
+      },
+      {
+        "id": 2,
+        "content": "Dr",
+        "authorType": "staff",
+        "authorName": "chevalier577",
+        "timestamp": "2026-03-21T10:53:59.565Z"
+      }
+    ],
     "createdAt": "2026-03-21T10:52:30.367Z"
   }
 }
