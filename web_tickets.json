@@ -410,7 +410,7 @@
     "discordChannelId": "1484906573913391256",
     "guildId": "1484239591967035585",
     "redeemed": true,
-    "closed": false,
+    "closed": true,
     "messages": [
       {
         "id": 1,
