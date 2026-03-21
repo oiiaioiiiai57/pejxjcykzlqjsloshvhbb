@@ -453,8 +453,16 @@
     "discordChannelId": "1484974891659952300",
     "guildId": "1484239591967035585",
     "redeemed": false,
-    "closed": false,
-    "messages": [],
+    "closed": true,
+    "messages": [
+      {
+        "id": 1,
+        "content": "😅",
+        "authorType": "member",
+        "authorName": "what5656577",
+        "timestamp": "2026-03-21T18:00:11.131Z"
+      }
+    ],
     "createdAt": "2026-03-21T18:00:04.196Z"
   }
 }
