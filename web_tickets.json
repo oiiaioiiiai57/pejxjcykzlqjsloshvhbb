@@ -380,7 +380,7 @@
     "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistré ici.",
     "discordChannelId": "1484867292092301432",
     "guildId": "1484239591967035585",
-    "redeemed": false,
+    "redeemed": true,
     "closed": false,
     "messages": [],
     "createdAt": "2026-03-21T10:52:30.367Z"
