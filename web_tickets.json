@@ -479,5 +479,19 @@
       }
     ],
     "createdAt": "2026-03-21T18:00:04.196Z"
+  },
+  "eb624382344c91d14b1960a2": {
+    "userId": "1355482903760339196",
+    "username": "what5656577",
+    "service": "Bin",
+    "tier": "free",
+    "code": "B5EBD9",
+    "account": "5154620021107535|05|2030|204",
+    "discordChannelId": "1485281675649745027",
+    "guildId": "1484239591967035585",
+    "redeemed": false,
+    "closed": false,
+    "messages": [],
+    "createdAt": "2026-03-22T14:19:07.164Z"
   }
 }
