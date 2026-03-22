@@ -221,5 +221,12 @@
     "webTicketId": "4f66689e739f5ecd586e2b19",
     "tier": "free",
     "service": "Test"
+  },
+  "E6069B": {
+    "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistré ici.",
+    "user": "1112314692258512926",
+    "webTicketId": "414f9d687e59e141ceafc28e",
+    "tier": "free",
+    "service": "Test"
   }
 }
