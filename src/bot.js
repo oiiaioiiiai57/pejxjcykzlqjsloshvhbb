@@ -554,9 +554,7 @@ async function handleCommand(interaction, name) {
       return interaction.followUp({embeds:[
         new EmbedBuilder()
           .setTitle("⏳ Please wait for a staff member")
-          .setDescription(
-  "Only staff can validate tickets.\nPlease wait for staff response."
-)
+          .setDescription("Only staff can validate tickets.")
           .setColor(C.warn)
           .setFooter({text:"Gen Bot"})
       ]});
@@ -853,8 +851,7 @@ async function handleCommand(interaction, name) {
         "To gain access, you need to pass a quick verification.",
         "",
         "Click the button below and answer the question to get verified.",
-      ].join("
-"))
+      ].join("\n")
       .setColor(0x6366f1)
       .setFooter({text:"Gen Bot • Verification System"})
       .setTimestamp();
