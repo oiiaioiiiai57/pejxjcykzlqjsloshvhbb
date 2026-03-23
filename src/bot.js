@@ -554,8 +554,7 @@ async function handleCommand(interaction, name) {
       return interaction.followUp({embeds:[
         new EmbedBuilder()
           .setTitle("⏳ Please wait for a staff member")
-          .setDescription("Only staff can validate tickets.
-A staff member will assist you shortly!")
+          .setDescription("Only staff can validate tickets. A staff member will assist you shortly!")
           .setColor(C.warn)
           .setFooter({text:"Gen Bot"})
       ]});
