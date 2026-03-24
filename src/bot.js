@@ -551,11 +551,10 @@ async function handleCommand(interaction, name) {
   if (name === "redeem") {
     await interaction.deferReply();
     if (!isStaff(member)) {
-      return interaction.followUp({embeds:[
+            return interaction.followUp({embeds:[
         new EmbedBuilder()
           .setTitle("⏳ Please wait for a staff member")
-          .setDescription("Only staff can validate tickets.
-A staff member will assist you shortly!")
+          .setDescription("Only staff can validate tickets.\nA staff member will assist you shortly!")
           .setColor(C.warn)
           .setFooter({text:"Gen Bot"})
       ]});
@@ -846,14 +845,7 @@ A staff member will assist you shortly!")
 
     const embed = new EmbedBuilder()
       .setTitle("🛡️  Verification Required")
-      .setDescription([
-        "**Welcome to the server!**",
-        "",
-        "To gain access, you need to pass a quick verification.",
-        "",
-        "Click the button below and answer the question to get verified.",
-      ].join("
-"))
+      .setDescription("**Welcome to the server!**\n\nTo gain access, you need to pass a quick verification.\n\nClick the button below and answer the question to get verified.")
       .setColor(0x6366f1)
       .setFooter({text:"Gen Bot • Verification System"})
       .setTimestamp();
