@@ -1,11 +1,11 @@
 {
-  "1484860523743809598": {
-    "channelId": "1484271275366158447",
-    "guildId": "1484239591967035585",
+  "1486024064517804073": {
+    "channelId": "1479416884225900634",
+    "guildId": "1479080681572274320",
     "service": "Test",
     "tier": "free",
     "account": "Bienvenue dans le presse-papiers Gboard. Le texte que vous copiez est enregistré ici.",
-    "endsAt": "2026-03-21T10:26:36.204Z",
-    "ended": true
+    "endsAt": "2026-03-24T15:30:05.881Z",
+    "ended": false
   }
 }
