@@ -253,5 +253,11 @@
     "user": "1112314692258512926",
     "tier": "free",
     "service": "Netflix"
+  },
+  "0003F8": {
+    "account": "\"chelo.ims@gmail.com:Elchelo1306 | EmailVerified = true | country = CL | Provider = MERCADOLIBRE_CL | Plan = [Disney+ Premium - CL - Mercado Libre - L6 Bundle Paid] | SecurityFlagged = false | IsFreeTrial = false | PurchaseDate = 2021-08-31 | NextRenewalDate = 2024-07-28 | Subscriber = true | VoucherCode = DISNEY_PURCHASE_VOCHR | Name = [Marcelo Medina] | Type = [CREDIT] | ExpiryYear = 10/2025 | Bank = [ITAU CORPBANCA]\",",
+    "user": "1485660099379724340",
+    "tier": "free",
+    "service": "Disney"
   }
 }
