@@ -1,0 +1,19 @@
+{
+  "name": "genbot",
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.0.2",
+    "cors": "^2.8.5",
+    "discord.js": "^14.16.3",
+    "express": "^4.21.2",
+    "ws": "^8.18.0",
+    "unzipper": "^0.12.3"
+  }
+}
