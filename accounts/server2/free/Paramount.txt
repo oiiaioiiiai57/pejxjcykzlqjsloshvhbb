@@ -1,4 +1,3 @@
-Daniel.Gentis@gmail.com:Daniel9621@! | Country = US | Status = ACTIVE | Plan = annual | Product = ALLACCESSADFREENOTRIALANNUAL | Benifit = CBSALLACCESSADFREEPACKAGE | OnTrial = false | AutoRenew = true
 chrisx209x@gmail.com:Stewie25 | Country = US | Status = ACTIVE | Plan = monthly | Product = AACFNOTRIALMONTHLY | Benifit = CBSALLACCESSADFREEPACKAGE | OnTrial = false | AutoRenew = true
 fernandodanielpellegrino@gmail.com:Nuva2610 | Country = AR | Status = ACTIVE | Plan = none | Product = mvpdproduct | Benifit = PPLUSINTLMVPDPACKAGE | OnTrial = false | AutoRenew = false
 silasfagundes8@gmail.com:Fagundes12 | Country = BR | Status = ACTIVE | Plan = monthly | Product = pplusintlmonthly | Benifit = CBSALLACCESSADFREEPACKAGE | OnTrial = false | AutoRenew = false
