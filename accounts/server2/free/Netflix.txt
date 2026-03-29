@@ -1,4 +1,3 @@
-.netflix.com	TRUE	/	FALSE	1800998892	OptanonConsent	isGpcEnabled=0&datestamp=Mon+Jan+26+2026+22%3A28%3A12+GMT%2B0100+(Mitteleurop%C3%A4ische+Normalzeit)&version=202512.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=da7ccdaf-d906-457f-b659-7e11a588e507&interactionCount=2&isAnonUser=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1&intType=3&crTime=1769462856295&geolocation=DE%3BBW&AwaitingReconsent=false
 .netflix.com	TRUE	/	TRUE	1800998892	SecureNetflixId	v%3D3%26mac%3DAQEAEQABABQwOn_kDeTpX6DxrMaB4nOehntK1VoQCFA.%26dt%3D1769462893759
 .netflix.com	TRUE	/	FALSE	1800998889	nfvdid	BQFmAAEBEK2Mxn2Fb9G5eBwcIkaJirVgsGxgsbEe7IT380V20c2HWM3y78JEuNzw_RqSKXtrz_qVvD3KazH-Wq4Mpz6VQHKsXHTGjxN9pYluNtKax7Hdyo69mgdSDkVExX7H_w9KhbSBRYAWXpnKZNes1Re5mNat
 .netflix.com	TRUE	/	FALSE	1799356466	OptanonAlertBoxClosed	2026-01-07T21:14:26.585Z
