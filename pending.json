@@ -277,5 +277,11 @@
     "user": "1207982888474124340",
     "tier": "free",
     "service": "Xbox"
+  },
+  "3E8859": {
+    "account": ".netflix.com\tTRUE\t/\tFALSE\t1800998892\tOptanonConsent\tisGpcEnabled=0&datestamp=Mon+Jan+26+2026+22%3A28%3A12+GMT%2B0100+(Mitteleurop%C3%A4ische+Normalzeit)&version=202512.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=da7ccdaf-d906-457f-b659-7e11a588e507&interactionCount=2&isAnonUser=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1&intType=3&crTime=1769462856295&geolocation=DE%3BBW&AwaitingReconsent=false",
+    "user": "1106281752470765779",
+    "tier": "free",
+    "service": "Netflix"
   }
 }
