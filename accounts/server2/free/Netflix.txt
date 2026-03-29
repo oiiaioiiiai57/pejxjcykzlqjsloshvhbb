@@ -1,4 +1,3 @@
-.netflix.com	TRUE	/	FALSE	1790364002	OptanonAlertBoxClosed	2025-09-25T19:20:02.143Z
 www.netflix.com	FALSE	/	FALSE	1776631117	didUserInteractWithPage	true
 secured.netflix.com	FALSE	/	TRUE	1793911138	thx_guid	4cee5303ab0822a90e54863f2a3ddb5d
 secured.netflix.com	FALSE	/	TRUE	1793911371	tmx_guid	AAwxy6qRdFL5vblLLCDez9PtdjnWQOLGYpT0ItrdqikkRH2xTOchxO3BteoOrJhrtAaTngeYb6wB4dSARlE0u0pNWpHIeA
