@@ -277,5 +277,11 @@
     "user": "1207982888474124340",
     "tier": "free",
     "service": "Xbox"
+  },
+  "6F45DF": {
+    "account": ".netflix.com\tTRUE\t/\tFALSE\t1800998853\tOptanonAlertBoxClosed\t2026-01-26T21:27:33.678Z",
+    "user": "1112314692258512926",
+    "tier": "free",
+    "service": "Netflix"
   }
 }
