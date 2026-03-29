@@ -1,13 +1,3 @@
-.netflix.com	TRUE	/	FALSE	1790364002	OptanonAlertBoxClosed	2025-09-25T19:20:02.143Z
-www.netflix.com	FALSE	/	FALSE	1776631117	didUserInteractWithPage	true
-secured.netflix.com	FALSE	/	TRUE	1793911138	thx_guid	4cee5303ab0822a90e54863f2a3ddb5d
-secured.netflix.com	FALSE	/	TRUE	1793911371	tmx_guid	AAwxy6qRdFL5vblLLCDez9PtdjnWQOLGYpT0ItrdqikkRH2xTOchxO3BteoOrJhrtAaTngeYb6wB4dSARlE0u0pNWpHIeA
-.netflix.com	TRUE	/	FALSE	1790887442	nfvdid	BQFmAAEBEE2nzCTwrI44mFh-YVTNfoRgP0rwDIkPNTt63eh7-Lhuy9OnQRp61IjQF7TZGcGWJZYTz_nrOd1GKAzHAqWwHdgxrPiKwi3249H6366Z6V7amMJ-LGybrONK4wqW_Bd85Qq9pa5lHAy3QR9JryNrHrXR
-.netflix.com	TRUE	/	FALSE	1773174845	netflix-sans-bold-3-loaded	true
-.netflix.com	TRUE	/	FALSE	1796934849	OptanonConsent	isGpcEnabled=0&datestamp=Wed+Dec+10+2025+21%3A34%3A09+GMT%2B0100+(Central+European+Standard+Time)&version=202510.2.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=e5c3b27e-f90e-4dba-9a4c-a51b2995b05f&interactionCount=2&isAnonUser=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1&AwaitingReconsent=false&intType=1&geolocation=DE%3BSN
-.netflix.com	TRUE	/	FALSE	1773174845	netflix-sans-normal-3-loaded	true
-.netflix.com	TRUE	/	TRUE	1797073901	SecureNetflixId	v%3D3%26mac%3DAQEAEQABABTyNG6jTc0xYwChdD3kF5O8CYFIWMvXIFU.%26dt%3D1765537901296
-.netflix.com	TRUE	/	TRUE	1797073901	NetflixId	ct%3DBgjHlOvcAxLcA3g9jbRlV7ogRSOFIhVn5F1WOK39ecoMijiCYwJZuvTWu930tg_CZNGqyzsnPzT_RmGtXuS2PSy_sBPTEUEflVvHI6Sm5kgLAkcKj7fkNGTaV1PXJf4Osc_geosJeHx4wDnFJqji2nUcYipWg7qjLNP4Op_UQGV_cLN8w3oTtHelu23EfS0WbOPu1yiQgZtWS75i45yvXCgRVIfZosxxzX6BNy4MQTkCHg8Gjvm4Ke_7CPzBGKMFc98Lcb_idSDGLfEd2dT_HKoVVsFQaVwuXeEYl-uLSc1mYrPjNQwkcxtNkOqlvPwuAzYfGGfpmwruNgxBuxurnXcYrBFriyv4BsSRv17xm1P4bAgeVx51W5xYUSU_F_s76_wkeWKMB7p-SmITTJS45rNdWK9ZD-QrOev6yLhX5h8bn36zO6cXZi38gwnsdwzURG7cFs50jnkCM4ybmGI1_d5O5WqRAmJJo0IdqJQizyWwu4NucwdZcUpbWeO_QX86zvYnCOYBqNV1Yurb5UL7kX7PLQj5lhftanzlGeWl4JqGl3PbpL08TyylwMJpwr5MmU7anBvBSGcf7F9XkfjgKl5mLDqESPbky5mvHDkz9N7NbB0nvSSeom5RKF4S7vQPRuWNwIXOGAYiDgoMbL-PmrWb0SxV93WZ%26ch%3DAQEAEAABABTMITU-Qpcy0z_GuQs_1tU3D7Wv81lMczw.%26v%3D3%26pg%3D2P36EJ2HNVCM7BFW6NVE2LPDPI
 .netflix.com	TRUE	/	FALSE	1777234768	netflix-sans-bold-3-loaded	true
 .netflix.com	TRUE	/	FALSE	1777234768	netflix-sans-normal-3-loaded	true
 .netflix.com	TRUE	/	FALSE	1777234768	pas	%7B%22supplementals%22%3A%7B%22muted%22%3Afalse%7D%7D
