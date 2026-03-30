@@ -277,5 +277,11 @@
     "user": "1207982888474124340",
     "tier": "free",
     "service": "Xbox"
+  },
+  "A71526": {
+    "account": "\"ediele95camile@hotmail.com:lobato1802 | EmailVerified = true | country = BR | Provider = TIMBR_BR | Plan = [Disney+ Basic - BR - TIM - Bundle] | SecurityFlagged = false | IsFreeTrial = false | PurchaseDate = 2023-01-01 | NextRenewalDate = 2023-09-01 | Subscriber = true | Name = [] | Type = [] | ExpiryYear = / | Bank = []\",",
+    "user": "1115509978225184879",
+    "tier": "free",
+    "service": "Disney"
   }
 }
