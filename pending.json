@@ -283,11 +283,5 @@
     "user": "1289552524621250644",
     "tier": "free",
     "service": "Netflix"
-  },
-  "A38180": {
-    "account": ".netflix.com\tTRUE\t/\tFALSE\t1790364002\tOptanonAlertBoxClosed\t2025-09-25T19:20:02.143Z",
-    "user": "1040256699480686604",
-    "tier": "premium",
-    "service": "P-netflix"
   }
 }
