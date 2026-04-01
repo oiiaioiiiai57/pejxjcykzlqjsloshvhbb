@@ -301,5 +301,11 @@
     "user": "371568058617298946",
     "tier": "free",
     "service": "Bin"
+  },
+  "10AA80": {
+    "account": "\"ediele95camile@hotmail.com:lobato1802 | EmailVerified = true | country = BR | Provider = TIMBR_BR | Plan = [Disney+ Basic - BR - TIM - Bundle] | SecurityFlagged = false | IsFreeTrial = false | PurchaseDate = 2023-01-01 | NextRenewalDate = 2023-09-01 | Subscriber = true | Name = [] | Type = [] | ExpiryYear = / | Bank = []\",",
+    "user": "1393093166441173082",
+    "tier": "free",
+    "service": "Disney"
   }
 }
