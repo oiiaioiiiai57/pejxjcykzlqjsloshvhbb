@@ -313,5 +313,11 @@
     "user": "1185185602023465012",
     "tier": "free",
     "service": "Crunchyroll"
+  },
+  "80D8CE": {
+    "account": "\"jcochygranado@yahoo.com.ar:Ruth/1911 | EmailVerified = true | country = AR | Provider = MERCADOLIBRE_AR | Plan = [Disney+ Premium - AR - Mercado Libre - L6 Bundle Paid] | SecurityFlagged = false | IsFreeTrial = false | Subscriber = true | Name = [] | Type = [] | ExpiryYear = / | Bank = []\",",
+    "user": "622494714607697941",
+    "tier": "free",
+    "service": "Disney"
   }
 }
