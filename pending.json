@@ -307,11 +307,5 @@
     "user": "1437811228654178496",
     "tier": "free",
     "service": "Crunchyroll"
-  },
-  "8EC217": {
-    "account": ".netflix.com\tTRUE\t/\tFALSE\t1792063718\tOptanonConsent\tisGpcEnabled=0&datestamp=Wed+Oct+15+2025+13%3A28%3A38+GMT%2B0200+(Hor%C3%A1rio+de+Ver%C3%A3o+da+Europa+Central)&version=202508.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=6f064f68-cca9-4ca7-94f4-67448adc1331&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0002%3A1%2CC0003%3A1%2CC0004%3A1&AwaitingReconsent=false",
-    "user": "1185185602023465012",
-    "tier": "free",
-    "service": "Netflix"
   }
 }
