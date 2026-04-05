@@ -307,5 +307,11 @@
     "user": "1437811228654178496",
     "tier": "free",
     "service": "Crunchyroll"
+  },
+  "07BCFF": {
+    "account": "\"digitecsm@hotmail.com:Mbss2005-7 | EmailVerified = true | country = BR | Provider = MERCADOLIBRE_BR | Plan = [Disney+ Basic - BR - Mercado Libre - L6 Bundle Paid] | SecurityFlagged = false | IsFreeTrial = false | Subscriber = true | Name = [] | Type = [] | ExpiryYear = / | Bank = []\",",
+    "user": "923239168958677025",
+    "tier": "free",
+    "service": "Disney"
   }
 }
