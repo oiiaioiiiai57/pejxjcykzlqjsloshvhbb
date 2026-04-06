@@ -1,4 +1,3 @@
-2.    marcelo.queiroz6@gmail.com:1980logan@ | USER = Marcelo | COUNTRY = Brazil 🇧🇷 | PROFILES = [Marcelo, Josmar, Bia, jroliveira, Julio] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = Mercado Livre
 3.    hgaitan438@gmail.com:Henrri0417 | USER = Ada | COUNTRY = Guatemala 🇬🇹 | PROFILES = [Ada, Henrri] | PLAN(SUB) = Plan actual
 4.    fernanda.bianca.ff@gmail.com:Crlnew2020@ | USER = Fernanda | COUNTRY = Brazil 🇧🇷 | PROFILES = [Fer e Anderson, Isa e Welton, Os França, Os Mira, ...] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = PLAYHUB
 5.    tgo.bonfim@hotmail.com:TiagoBonfim | USER = Tiago | COUNTRY = Brazil 🇧🇷 | PROFILES = [Tiago, Crianças] | PLAN(SUB) = Basic With Ads (Monthly) | PAYMENT METHOD = Nubank
