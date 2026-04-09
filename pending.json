@@ -319,11 +319,5 @@
     "user": "1081636179889369138",
     "tier": "free",
     "service": "Hbomax"
-  },
-  "B897C7": {
-    "account": "web: pip uninstall -y discord 2>/dev/null; pip install \"discord.py==2.4.0\" --force-reinstall -q && python main.py",
-    "user": "1143841756828422218",
-    "tier": "booster",
-    "service": "Soon..."
   }
 }
