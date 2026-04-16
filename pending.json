@@ -325,5 +325,11 @@
     "user": "923239168958677025",
     "tier": "free",
     "service": "Disney"
+  },
+  "5CFB4C": {
+    "account": "lexandebarros@hotmail.com:JABarr@029 | USER = Anne\\x20Kelle | STATUS = CURRENT_MEMBER | Country = Brazil 🇧🇷 | memberPlan = Premium | memberSince = julho de 2023 | videoQuality = UHD | phonenumber = (81) 99422-9511 | Verified = false | EmailVerified = false | ONHOLD = false | maxStreams = 4 | EtraMemberslot = [{\"__typename\":\"GrowthExtraMemberSlot\" | Price = R$59,90 | PaymentMethod = DC | NextBillingDate = 2026-03-21 | paymentType = ELO | NetflixId1 = v%3D3%26ct%3DBgjHlOvcAxKKA27bSVqOdgNdfKQPK4ovPYN27gXgshs9Hz6bdIg-5rCo5I9idSBfu8bF_-gWStuzuKOYaxxkU1zIF46YcKX2BXDEcCwo_fvGmFSLPWBK4TxJPw464cTGMFjx4sUwUIkM6C_SLp_N48wKMfcX5g580Lg27UDiOnx4zYyQDROFPXJvLHx4lsY3jWmIu8RczNuVKDDEt5o2SZtPFVMCNRTlHUAKZSsSAiBi6mEcWuBkuwFwCJTmR5Bf3vGsqRY1ywHrS0RqhnAbw-18l841it-As5uEw1U1ZX3yiWdgjjR0Q4KuDRSeJ91TldkK6OPo4QhRanDf7CS1GJ_DWWmtdnVVcVLVIU6R5pPFl-cEVOI73CIAhZx2vmMEVLlzGUXj7b3sQ9CIWl0mRND9na_8l3Jv_cBIeOzpUb_g7RwiT4c5lfFe0LB-jyWqu5LvSywE22xcruuJkGtoJGEvvJLQPr7-mTvUc8gMMshnmUOwTg4bK5iZ5Wauy1cnooQ36KgLn-OVpSUWHzDY54pYpUAYBiIOCgy17FOXB7VwhP3Kawc.%26pg%3DSYUGWUBZGZDIFKPDKQCEDGTDRU%26ch%3DAQEAEAABABSsANhBnkcW0Dg-55ex24boByYuTsIdVN4.",
+    "user": "1185185602023465012",
+    "tier": "free",
+    "service": "Netflix"
   }
 }
