@@ -1,4 +1,3 @@
-fernandodanielpellegrino@gmail.com:Nuva2610 | Country = AR | Status = ACTIVE | Plan = none | Product = mvpdproduct | Benifit = PPLUSINTLMVPDPACKAGE | OnTrial = false | AutoRenew = false
 silasfagundes8@gmail.com:Fagundes12 | Country = BR | Status = ACTIVE | Plan = monthly | Product = pplusintlmonthly | Benifit = CBSALLACCESSADFREEPACKAGE | OnTrial = false | AutoRenew = false
 mjsmiles1988@yahoo.com:Charlie2010 | Country = US | Status = ACTIVE | Plan = na | Product = PARAMOUNTESSENTIAL | Benifit = CBSALLACCESSLOWCOSTPACKAGE | OnTrial = false | AutoRenew = false
 07203flash@gmail.com:james5053 | Country = US | Status = ACTIVE | Plan = monthly | Product = PPLUSAPPLCP7DAYTRIALMONTHLY | Benifit = CBSALLACCESSLOWCOSTPACKAGE | OnTrial = false | AutoRenew = false
