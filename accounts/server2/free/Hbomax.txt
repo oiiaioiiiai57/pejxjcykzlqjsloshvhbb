@@ -1,4 +1,3 @@
-8.    luis.castellanos74@gmail.com:LJCRhbomax@24 | USER = LUIS | COUNTRY = Mexico 🇲🇽 | PROFILES = [LUIS, PATO, CAS, ABU] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = izzi
 9.    monallisacosmo22@gmail.com:m0n4ll1s4 | USER = Monallisa | COUNTRY = Brazil 🇧🇷 | PROFILES = [Monallisa] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = TIM
 10.    roy.barrantes@ucr.ac.cr:Tnsl7ts0 | USER = Roy | COUNTRY = Costa Rica 🇨🇷 | PROFILES = [Roy, Jime :)] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = Liberty
 11.    comunistaalex@hotmail.com:95103107807Yei | USER = Yei | COUNTRY = Colombia 🇨🇴 | PROFILES = [Alexandra, Yei Gost] | PLAN(SUB) = Plan actual
