@@ -331,5 +331,11 @@
     "user": "923239168958677025",
     "tier": "free",
     "service": "Disney"
+  },
+  "9A67FB": {
+    "account": "dfmonica@live.it:Monica1973$ | USER = Pio | STATUS = CURRENT_MEMBER | Country = Italy 🇮🇹 | memberPlan = Premium | memberSince = gennaio 2024 | videoQuality = UHD | phonenumber = 335 535 4589 | Verified = false | EmailVerified = false | ONHOLD = false | maxStreams = 4 | EtraMemberslot = [{\"__typename\":\"GrowthExtraMemberSlot\" | Price = 19,99€ | PaymentMethod = CC | NextBillingDate = 2026-03-15 | paymentType = MASTERCARD | NetflixId1 = v%3D3%26ct%3DBgjHlOvcAxKDA4svtzXhUYGTkiv3Ci8CU_VP5YK23AhvV30v8uwUIMwgYyLjhsrJ-6zUmZiQZYLMW4sBsAh5FI2uNB0jSfa1J8DA0s13NfRs3h3isXf7dEp-YSIlMYmoEASQdUQbvksWa65QIN7ZyddWQw1x0oZ6Ts40B6CVcHGgPHIzNH3sg-APR1tB_qDrqpXBW4nE4HEX15HO04ebXekxW-CLK5WFfA7mqUcJJKiCEDrhJu7DIGiq8tM1qhXkrBwXes0KMuzrA3uMruIh82udGPEsC_AQTcdTV_yuU9ZiuwKcSFGQetYdQtZZ1H86M59uQDEYB1SVR3c0unsif8nGXmZGOgEQ9ZrVS0G-J_iBOPfSfA5EmSDWFqfPF54qbeOWNtUNU__FR_lOOvlp9fo-7ydHyEMTYFepRW24K3-K9sYPyjD-aAW3w0NmbX-wsFnQlUQWhs5lp9A4JGDA-Wwg8yYmqPd_aq1vUb8AVt4oLwTvLv-Ye9_oW3En4_7jm2QOF0VLg0MFd_DXQhgGIg4KDJIWjDUAm3RAowDFSA..%26pg%3DXXIBEPAA3NB7XCLYEOCWA4G2E4%26ch%3DAQEAEAABABSjSJfs544LalHhMmGXDyVd6XsvSHxRm9s.",
+    "user": "1091313123060887553",
+    "tier": "free",
+    "service": "Netflix"
   }
 }
