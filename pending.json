@@ -325,5 +325,11 @@
     "user": "742777868895125667",
     "tier": "free",
     "service": "Crunchyroll"
+  },
+  "F7516C": {
+    "account": "\"chelo.ims@gmail.com:Elchelo1306 | EmailVerified = true | country = CL | Provider = MERCADOLIBRE_CL | Plan = [Disney+ Premium - CL - Mercado Libre - L6 Bundle Paid] | SecurityFlagged = false | IsFreeTrial = false | PurchaseDate = 2021-08-31 | NextRenewalDate = 2024-07-28 | Subscriber = true | VoucherCode = DISNEY_PURCHASE_VOCHR | Name = [Marcelo Medina] | Type = [CREDIT] | ExpiryYear = 10/2025 | Bank = [ITAU CORPBANCA]\",",
+    "user": "1348371210404102366",
+    "tier": "free",
+    "service": "Disney"
   }
 }
