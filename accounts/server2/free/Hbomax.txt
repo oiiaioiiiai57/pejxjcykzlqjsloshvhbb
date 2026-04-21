@@ -1,4 +1,3 @@
-10.    roy.barrantes@ucr.ac.cr:Tnsl7ts0 | USER = Roy | COUNTRY = Costa Rica 🇨🇷 | PROFILES = [Roy, Jime :)] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = Liberty
 11.    comunistaalex@hotmail.com:95103107807Yei | USER = Yei | COUNTRY = Colombia 🇨🇴 | PROFILES = [Alexandra, Yei Gost] | PLAN(SUB) = Plan actual
 12.    evanio_galdino@arenasber.com:Ng2212_ng* | USER = libre | COUNTRY = Brazil 🇧🇷 | PROFILES = [h1] | PLAN(SUB) = Standard (Mensual)
 13.    wacku22@hotmail.com:ales2906 | USER = centro | COUNTRY = Argentina 🇦🇷 | PROFILES = [centro, Eve y Martin] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = Flow
