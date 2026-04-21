@@ -343,5 +343,11 @@
     "user": "1488099576165699584",
     "tier": "free",
     "service": "Hbomax"
+  },
+  "5E998B": {
+    "account": "\"digitecsm@hotmail.com:Mbss2005-7 | EmailVerified = true | country = BR | Provider = MERCADOLIBRE_BR | Plan = [Disney+ Basic - BR - Mercado Libre - L6 Bundle Paid] | SecurityFlagged = false | IsFreeTrial = false | Subscriber = true | Name = [] | Type = [] | ExpiryYear = / | Bank = []\",",
+    "user": "733340680314945597",
+    "tier": "free",
+    "service": "Disney"
   }
 }
