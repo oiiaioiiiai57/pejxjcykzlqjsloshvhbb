@@ -1,7 +1,1 @@
-12.    evanio_galdino@arenasber.com:Ng2212_ng* | USER = libre | COUNTRY = Brazil 🇧🇷 | PROFILES = [h1] | PLAN(SUB) = Standard (Mensual)
-13.    wacku22@hotmail.com:ales2906 | USER = centro | COUNTRY = Argentina 🇦🇷 | PROFILES = [centro, Eve y Martin] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = Flow
-14.    wichotrevor97@outlook.com:Wicho10211997! | USER = Luis Roberto | COUNTRY = Mexico 🇲🇽 | PROFILES = [Wicho, Chris] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = Mercado Libre
-15.    catanoreynaldo@gmail.com:santi5574 | USER = Christian | COUNTRY = Mexico 🇲🇽 | PROFILES = [Chrizz, santi, Sam] | PLAN(SUB) = Plan actual
-16.    collegezaid18@gmail.com:netflixmorado2024 | USER = Siro | COUNTRY = Mexico 🇲🇽 | PROFILES = [Siro, wario, LilRoi, Emma, Jb7] | PLAN(SUB) = Legacy Standard | PAYMENT METHOD = VISA **** 7859
-17.    marcosribeiro.ribeiro@yahoo.com.br:quincasribeiro1234 | USER = Marcos | COUNTRY = Brazil 🇧🇷 | PROFILES = [Marcos, Luciana, Kaique, Matheus] | PLAN(SUB) = Standard (Monthly) | PAYMENT METHOD = PLAYHUB
-1.    max9235r@stmov.co:Premium2024 | USER = Diego | COUNTRY = Argentina 🇦🇷 | PROFILES = [1, 2, 3, vero, 5] | PLAN(SUB) = Standard (Mensual
+
