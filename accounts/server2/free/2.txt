@@ -1,4 +1,3 @@
-By: Prime
 ovibalo@hotmail.com:Calatayud6 | Full Name = ovidio il | Payment Method = [MasterCard **0304] | Exp Date = [03/2031] | Is Valid? = True | Is Payment Expire? = False | Points Balance = 254
 drik-c35@hotmail.fr:@Kellia356 | Full Name = cedric paries | Payment Method = [Microsoft account balance, PayPal (mekouille@hotmail.fr)] | Is Valid? = True | Is Payment Expire? = False | Available Balance = 0 | Points Balance = 0
 sergiobolinches@hotmail.com:Boli99047575** | Full Name = sergio bolinches | Payment Method = [American Express **3188, Visa **1901] | Exp Date = [05/2029, 07/2025] | Is Valid? = True | Is Payment Expire? = False | Points Balance = 0
