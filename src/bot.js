@@ -1339,5 +1339,9 @@ export function startBot() {
   botHttpServer.listen(BOT_HTTP_PORT, "127.0.0.1", () => {
     console.log(`🔌 Bot HTTP bridge listening on :${BOT_HTTP_PORT}`);
   });
-  client.login(process.env.TOKEN).catch(e=>console.error("Bot login failed:", e.message));
+  if (process.env.TOKEN) {
+    client.login(process.env.TOKEN).catch(e=>console.error("Bot login failed:", e.message));
+  } else {
+    console.log("No DISCORD_TOKEN found, skipping bot login (web-only mode)");
+  }
 }
