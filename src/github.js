@@ -1,7 +1,7 @@
 import { Octokit } from "@octokit/rest";
 
-const REPO_OWNER = "chevalier577pro";
-const REPO_NAME  = "pejxjcykzlqjsloshvhbb";
+const REPO_OWNER = process.env.GITHUB_REPO_OWNER || "oiiaioiiiai57";
+const REPO_NAME  = process.env.GITHUB_REPO_NAME || "pejxjcykzlqjsloshvhbb";
 
 let octokit = null;
 
