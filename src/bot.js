@@ -996,6 +996,10 @@ Type \`/${cmd}\` to use this command.`)
 
 // ── INTERACTIONS ──────────────────────────────────────────────
 client.on(Events.InteractionCreate, async interaction => {
+  // Define member and guild for slash commands
+  const member = interaction.member || (interaction.guild ? await interaction.guild.members.fetch(interaction.user.id).catch(()=>null) : null);
+  const guild  = interaction.guild;
+
   // ── REDEEM BUTTON ────────────────────────────────
   if (interaction.isButton() && interaction.customId.startsWith("redeem_btn_")) {
     const code   = interaction.customId.replace("redeem_btn_", "");
