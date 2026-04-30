@@ -7,7 +7,7 @@ import {
 import { readJson, writeJson, readLines, writeLines, listDir } from "./github.js";
 import { GUILDS, FILES, ACCOUNTS_DIR, BOT_SECRET, TIERS, TIER_META,
          COOLDOWN_LIMITS, DEFAULT_CATEGORIES, RATE_LIMITS, STOCK_ALERT_THRESHOLD,
-         LOW_STOCK_THRESHOLD, BACKUP_CONFIG, FEEDBACK_CONFIG } from "./config.js";
+         LOW_STOCK_THRESHOLD, BACKUP_CONFIG, FEEDBACK_CONFIG, loadGuildConfig } from "./config.js";
 import { channelToTicket } from "./server.js";
 import { messages, t, getUserLang } from "./i18n.js";
 import crypto from "crypto";
