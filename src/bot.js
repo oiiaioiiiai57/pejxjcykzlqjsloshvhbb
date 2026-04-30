@@ -827,6 +827,29 @@ client.once(Events.ClientReady, async () => {
   await loadGuildConfig();
   // Sync guilds with bot's current guild list
   try { await syncGuilds(client.guilds.cache); } catch(e) { console.warn("Guild sync failed:", e.message); }
+
+  // Auto-setup ticket categories if missing
+  try {
+    for (const [guildId, guild] of client.guilds.cache) {
+      const cfg = GUILDS[String(guildId)];
+      if (!cfg) continue;
+      if (!cfg.ticketCategory) {
+        // Look for a "TICKETS" category or create one
+        let cat = guild.channels.cache.find(c => c.type === 4 && /ticket/i.test(c.name));
+        if (!cat) {
+          cat = await guild.channels.create({ name: "Tickets", type: 4 }).catch(()=>null);
+        }
+        if (cat) {
+          cfg.ticketCategory = cat.id;
+          console.log(`✅ Auto-set ticketCategory for ${guild.name}: ${cat.id}`);
+          const all = await readJson(CONFIG_FILE);
+          all[guildId] = cfg;
+          await writeJson(CONFIG_FILE, all);
+        }
+      }
+    }
+  } catch(e) { console.warn("Auto ticket category setup failed:", e.message); }
+
   await migrateAccounts();
   await registerCommands();
   await loadGiveaways();
