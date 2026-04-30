@@ -126,9 +126,11 @@ export function getAccountsDir(guildId) {
 export const DISCORD_CLIENT_ID     = process.env.DISCORD_CLIENT_ID || "1481723412580929536";
 export const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 
-export const SITE = process.env.RAILWAY_PUBLIC_DOMAIN
-  ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-  : (process.env.SITE_URL || "https://web-production-06585.up.railway.app");
+export const SITE = process.env.RENDER_EXTERNAL_URL
+  ? process.env.RENDER_EXTERNAL_URL
+  : (process.env.RAILWAY_PUBLIC_DOMAIN
+    ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+    : (process.env.SITE_URL || "https://web-production-06585.up.railway.app"));
 
 export const DISCORD_REDIRECT_URI = process.env.DISCORD_REDIRECT_URI || `${SITE}/auth/callback`;
 export const BOT_SECRET = process.env.BOT_SECRET || "genbotinternal";
