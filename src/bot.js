@@ -493,7 +493,7 @@ async function checkAndPromote(guild, member, vouches) {
       }
       const newly=[];
       for (const rid of (roles||[])) {
-        if (!member.roles.cache.has(rid)) { await member.roles.add(rid).catch(console.error); newly.push(rid); }
+        if (rid && guild.roles.cache.has(rid) && !member.roles.cache.has(rid)) { await member.roles.add(rid).catch(console.error); newly.push(rid); }
       }
       if (newly.length) {
         const l=log("🎉  Promotion",`${member} → ${newly.map(r=>`<@&${r}>`).join(" ")} with **${vouches} vouches**!`);
@@ -931,10 +931,10 @@ client.on(Events.PresenceUpdate, async (oldPresence, newPresence) => {
 
     const hasRole = member.roles.cache.has(cfg.bioLinkRole);
 
-    if (hasLink && !hasRole) {
+      if (hasLink && !hasRole && cfg.bioLinkRole && guild.roles.cache.has(cfg.bioLinkRole)) {
       await member.roles.add(cfg.bioLinkRole).catch(console.error);
       console.log(`✅ Bio link role added to ${member.user.username}`);
-    } else if (!hasLink && hasRole) {
+    } else if (!hasLink && hasRole && cfg.bioLinkRole && guild.roles.cache.has(cfg.bioLinkRole)) {
       await member.roles.remove(cfg.bioLinkRole).catch(console.error);
       console.log(`❌ Bio link role removed from ${member.user.username}`);
     }
@@ -960,7 +960,7 @@ client.on(Events.GuildMemberAdd, async (member) => {
   await sendLog(member.guild, joinEmbed);
   // Give not-verified role on join (server 2 only)
   if (member.guild.id === "1479080681572274320" && cfg.notVerifiedRole) {
-    await member.roles.add(cfg.notVerifiedRole).catch(console.error);
+    if (cfg.notVerifiedRole && guild.roles.cache.has(cfg.notVerifiedRole)) { await member.roles.add(cfg.notVerifiedRole).catch(console.error); }
     console.log(`📥 ${member.user.username} joined — gave not-verified role`);
   }
 });
@@ -1131,9 +1131,9 @@ client.on(Events.InteractionCreate, async interaction => {
     const roleToRemove  = cfg?.notVerifiedRole;
     try {
       for (const rid of rolesToAdd) {
-        if (!member.roles.cache.has(rid)) await member.roles.add(rid).catch(console.error);
+        if (rid && guild.roles.cache.has(rid) && !member.roles.cache.has(rid)) await member.roles.add(rid).catch(console.error);
       }
-      if (roleToRemove && member.roles.cache.has(roleToRemove)) {
+      if (roleToRemove && guild.roles.cache.has(roleToRemove) && member.roles.cache.has(roleToRemove)) {
         await member.roles.remove(roleToRemove).catch(console.error);
       }
     } catch(e) { console.error("Verify role error:", e); }
