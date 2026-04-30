@@ -42,8 +42,8 @@ const DEFAULT_GUILDS = {
     staffRole:      "1479080681983316008",
     helperRole:     "1479080681983316004",
     addvRole:       "1479080681983316007",
-    modRoles:       ["1479080681983316004"],
-    staffRoleId:    "1479080681983316005",
+    modRoles:       ["1479080681996030042","1479080681983316004"],
+    staffRoleId:    "1479080681996030042",
     // Verify system
     verifyRole:      "1479080681996030042",
     notVerifiedRole: "1479234907153629214",

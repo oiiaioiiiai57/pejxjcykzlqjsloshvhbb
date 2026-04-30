@@ -417,7 +417,7 @@ function getServerTiers(guildId) {
   // Both servers now have free/premium/booster/extreme
   return TIERS;
 }
-function isMod(m)    { const c=getCfg(m.guild.id); return m.permissions.has(PermissionsBitField.Flags.Administrator) || c?.modRoles.some(r=>m.roles.cache.has(r))||false; }
+function isMod(m)    { const c=getCfg(m.guild.id); return m.guild.ownerId === m.id || m.permissions.has(PermissionsBitField.Flags.Administrator) || c?.modRoles.some(r=>m.roles.cache.has(r))||false; }
 function isHelper(m) { const c=getCfg(m.guild.id); return m.roles.cache.has(c?.helperRole)||false; }
 function isStaff(m)  { return isMod(m)||isHelper(m); }
 function hasAddv(m)  { const c=getCfg(m.guild.id); return m.roles.cache.has(c?.addvRole)||false; }
