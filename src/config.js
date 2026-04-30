@@ -74,13 +74,61 @@ let _configLoaded = false;
 export async function loadGuildConfig() {
   if (_configLoaded) return;
   _configLoaded = true;
+  // Clear current and load from GitHub
   Object.keys(GUILDS).forEach(k => delete GUILDS[k]);
-  Object.assign(GUILDS, DEFAULT_GUILDS);
-  console.log(`✅ Guild config loaded: ${Object.keys(GUILDS).join(", ")}`);
+  try {
+    const saved = await readJson(CONFIG_FILE);
+    if (saved && Object.keys(saved).length > 0) {
+      Object.assign(GUILDS, saved);
+      console.log(`✅ Guild config loaded from GitHub: ${Object.keys(GUILDS).join(", ")}`);
+    } else {
+      // Use DEFAULT_GUILDS and also add any guilds the bot is currently in
+      Object.assign(GUILDS, DEFAULT_GUILDS);
+      console.log(`✅ Guild config loaded (defaults): ${Object.keys(GUILDS).join(", ")}`);
+    }
+  } catch(e) {
+    Object.assign(GUILDS, DEFAULT_GUILDS);
+    console.log(`⚠️ Guild config load failed, using defaults: ${e.message}`);
+  }
 }
 
 export function getGuild(guildId) {
   return GUILDS[String(guildId)] || null;
+}
+
+// Sync GUILDS with actual bot guilds (call on ClientReady)
+export async function syncGuilds(botGuilds) {
+  let changed = false;
+  for (const [guildId, guild] of botGuilds) {
+    if (!GUILDS[String(guildId)]) {
+      console.log(`🔄 Syncing guild: ${guild.name} (${guildId})`);
+      GUILDS[String(guildId)] = {
+        name: guild.name,
+        folder: `server${Object.keys(GUILDS).length + 1}`,
+        freeChannel: null,
+        premiumChannel: null,
+        boosterChannel: null,
+        extremeChannel: null,
+        ticketCategory: null,
+        logChannel: null,
+        staffRole: null,
+        helperRole: null,
+        addvRole: null,
+        modRoles: [],
+        staffRoleId: null,
+        tierRoles: { free: [], premium: [], booster: [], extreme: [] },
+      };
+      changed = true;
+    }
+  }
+  if (changed) {
+    try {
+      await writeJson(CONFIG_FILE, GUILDS);
+      console.log(`✅ Guild config synced and saved`);
+    } catch(e) {
+      console.error(`Failed to save synced guilds: ${e.message}`);
+    }
+  }
 }
 
 // free=1/h  premium=3/h  booster=5/h  extreme=20/h  staff=∞

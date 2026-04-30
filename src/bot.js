@@ -7,7 +7,7 @@ import {
 import { readJson, writeJson, readLines, writeLines, listDir } from "./github.js";
 import { GUILDS, FILES, ACCOUNTS_DIR, BOT_SECRET, TIERS, TIER_META,
          COOLDOWN_LIMITS, DEFAULT_CATEGORIES, RATE_LIMITS, STOCK_ALERT_THRESHOLD,
-         LOW_STOCK_THRESHOLD, BACKUP_CONFIG, FEEDBACK_CONFIG, loadGuildConfig } from "./config.js";
+         LOW_STOCK_THRESHOLD, BACKUP_CONFIG, FEEDBACK_CONFIG, loadGuildConfig, syncGuilds } from "./config.js";
 import { channelToTicket } from "./server.js";
 import { messages, t, getUserLang } from "./i18n.js";
 import crypto from "crypto";
@@ -379,7 +379,13 @@ async function notifyRestock(guild, tier, service, amount) {
   }
 }
 
-function getCfg(guildId) { return getGuild(guildId); }
+function getCfg(guildId) {
+  const cfg = getGuild(guildId);
+  if (!cfg) {
+    console.warn(`[getCfg] Guild ${guildId} not in GUILDS. Available: ${Object.keys(GUILDS).join(",")}`);
+  }
+  return cfg;
+}
 
 // Build DM payload — returns { embeds, files? }
 async function buildAccountDM(account, service, tier) {
@@ -819,6 +825,8 @@ client.once(Events.ClientReady, async () => {
   console.log(`🤖 Bot online: ${client.user.tag}`);
   client.user.setActivity("/help • Gen Bot", {type: 3}); // type 3 = Watching
   await loadGuildConfig();
+  // Sync guilds with bot's current guild list
+  try { await syncGuilds(client.guilds.cache); } catch(e) { console.warn("Guild sync failed:", e.message); }
   await migrateAccounts();
   await registerCommands();
   await loadGiveaways();
@@ -839,6 +847,45 @@ client.once(Events.ClientReady, async () => {
       console.log(`✅ Restored ${Object.keys(map).length} ticket mappings`);
     }
   } catch(e) { console.warn("Could not restore ticket map:", e.message); }
+});
+
+// ── GUILD CREATE (auto-config new servers) ────────────────────
+client.on(Events.GuildCreate, async (guild) => {
+  const guildId = String(guild.id);
+  if (GUILDS[guildId]) return; // Already configured
+
+  console.log(`🆕 New guild joined: ${guild.name} (${guildId})`);
+  // Create default config for this guild
+  GUILDS[guildId] = {
+    name: guild.name,
+    folder: `server${Object.keys(GUILDS).length + 1}`,
+    freeChannel: null,
+    premiumChannel: null,
+    boosterChannel: null,
+    extremeChannel: null,
+    ticketCategory: null,
+    logChannel: null,
+    staffRole: null,
+    helperRole: null,
+    addvRole: null,
+    modRoles: [],
+    staffRoleId: null,
+    tierRoles: {
+      free: [],
+      premium: [],
+      booster: [],
+      extreme: []
+    },
+  };
+  // Save to GitHub
+  try {
+    const all = await readJson(CONFIG_FILE);
+    all[guildId] = GUILDS[guildId];
+    await writeJson(CONFIG_FILE, all);
+    console.log(`✅ Auto-configured guild ${guild.name}`);
+  } catch(e) {
+    console.error(`Failed to save guild config: ${e.message}`);
+  }
 });
 
 // ── BIO LINK ROLE WATCHER ─────────────────────────────────────
