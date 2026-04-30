@@ -52,7 +52,7 @@ async function checkAndAlertStock(guild, tier, service, remaining) {
     if (!cfg) return;
     const meta = TIER_META[tier] || TIER_META.free;
     const embed = new EmbedBuilder()
-      .setTitle("⚠️  LOW STOCK ALERT")
+      .setTitle("⚠️ LOW STOCK ALERT")
       .setColor(C.red)
       .setDescription(`**${service}** (${meta.emoji} ${meta.label}) is running low!`)
       .addFields(
@@ -63,17 +63,7 @@ async function checkAndAlertStock(guild, tier, service, remaining) {
       .setFooter({ text: "Gen Bot • Stock Alert System" })
       .setTimestamp();
     await sendLog(guild, embed);
-
-    // Send DM to staff
-    try {
-      const staffRole = guild.roles.cache.get(cfg.staffRole);
-      if (staffRole) {
-        const members = staffRole.members;
-        for (const [, member] of members) {
-          await member.send({ embeds: [embed] }).catch(() => {});
-        }
-      }
-    } catch (e) { console.error("Stock alert DM error:", e.message); }
+    // No DM spam - only log to staff channel
   }
 }
 
