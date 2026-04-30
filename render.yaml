@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: pejxjcykzlqjsloshvhbb
+    env: node
+    buildCommand: npm install
+    startCommand: node src/index.js
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: GITHUB_TOKEN
+        sync: false
+      - key: GITHUB_REPO_OWNER
+        value: oiiaioiiiai57
+      - key: GITHUB_REPO_NAME
+        value: pejxjcykzlqjsloshvhbb
+      - key: DISCORD_CLIENT_ID
+        sync: false
+      - key: DISCORD_CLIENT_SECRET
+        sync: false
+      - key: TOKEN
+        sync: false
+      - key: BOT_SECRET
+        value: genbotinternal
