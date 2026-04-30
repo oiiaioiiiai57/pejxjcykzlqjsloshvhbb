@@ -55,5 +55,47 @@
         "1484241028310368397"
       ]
     }
+  },
+  "1479080681572274320": {
+    "name": "RAIZEN GEN",
+    "folder": "server2",
+    "freeChannel": null,
+    "premiumChannel": null,
+    "boosterChannel": null,
+    "extremeChannel": null,
+    "ticketCategory": null,
+    "logChannel": null,
+    "staffRole": null,
+    "helperRole": null,
+    "addvRole": null,
+    "modRoles": [],
+    "staffRoleId": null,
+    "tierRoles": {
+      "free": [],
+      "premium": [],
+      "booster": [],
+      "extreme": []
+    }
+  },
+  "1479133088524009514": {
+    "name": "CHEV GEN",
+    "folder": "server3",
+    "freeChannel": null,
+    "premiumChannel": null,
+    "boosterChannel": null,
+    "extremeChannel": null,
+    "ticketCategory": null,
+    "logChannel": null,
+    "staffRole": null,
+    "helperRole": null,
+    "addvRole": null,
+    "modRoles": [],
+    "staffRoleId": null,
+    "tierRoles": {
+      "free": [],
+      "premium": [],
+      "booster": [],
+      "extreme": []
+    }
   }
 }
