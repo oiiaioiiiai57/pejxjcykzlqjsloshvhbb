@@ -2,13 +2,17 @@ import {
   Client, GatewayIntentBits, Partials, Events,
   SlashCommandBuilder, EmbedBuilder, PermissionsBitField,
   REST, Routes, ActionRowBuilder, ButtonBuilder, ButtonStyle,
+  StringSelectMenuBuilder, ModalBuilder, TextInputBuilder, TextInputStyle,
 } from "discord.js";
 import { readJson, writeJson, readLines, writeLines, listDir } from "./github.js";
 import { GUILDS, FILES, ACCOUNTS_DIR, BOT_SECRET, TIERS, TIER_META,
-         COOLDOWN_LIMITS, loadGuildConfig, getGuild, getAccountsDir } from "./config.js";
+         COOLDOWN_LIMITS, DEFAULT_CATEGORIES, RATE_LIMITS, STOCK_ALERT_THRESHOLD,
+         LOW_STOCK_THRESHOLD, BACKUP_CONFIG, FEEDBACK_CONFIG } from "./config.js";
 import { channelToTicket } from "./server.js";
+import { messages, t, getUserLang } from "./i18n.js";
 import crypto from "crypto";
 import http from "http";
+import fs from "fs/promises";
 
 const BACKEND = process.env.BACKEND_URL || "https://web-production-06585.up.railway.app";
 
@@ -27,12 +31,353 @@ export const client = new Client({
 });
 
 // ── COLOURS & HELPERS ─────────────────────────────────────────
-const C = { success:0x57F287, error:0xED4245, warn:0xFEE75C, info:0x5865F2, log:0x2B2D31 };
+const C = { success:0x57F287, error:0xED4245, warn:0xFEE75C, info:0x5865F2, log:0x2B2D31, purple:0xA855F7, blue:0x00BFFF, red:0xFF4757 };
 
-const ok   = (t,d) => new EmbedBuilder().setTitle(`✅  ${t}`).setDescription(d||null).setColor(C.success).setFooter({text:"Gen Bot"}).setTimestamp();
-const err  = (t,d) => new EmbedBuilder().setTitle(`❌  ${t}`).setDescription(d||null).setColor(C.error).setFooter({text:"Gen Bot"}).setTimestamp();
-const warn = (t,d) => new EmbedBuilder().setTitle(`⚠️  ${t}`).setDescription(d||null).setColor(C.warn).setFooter({text:"Gen Bot"}).setTimestamp();
+const ok   = (t,d) => new EmbedBuilder().setTitle(`✅  ${t}`).setDescription(d||null).setColor(C.success).setFooter({text:"Gen Bot • /help for commands"}).setTimestamp();
+const err  = (t,d) => new EmbedBuilder().setTitle(`❌  ${t}`).setDescription(d||null).setColor(C.error).setFooter({text:"Gen Bot • /help for commands"}).setTimestamp();
+const warn = (t,d) => new EmbedBuilder().setTitle(`⚠️  ${t}`).setDescription(d||null).setColor(C.warn).setFooter({text:"Gen Bot • /help for commands"}).setTimestamp();
 const log  = (t,d) => new EmbedBuilder().setTitle(t).setDescription(d||null).setColor(C.log).setTimestamp().setFooter({text:"Gen Bot • Log"});
+const fancy = (t,d,color) => new EmbedBuilder().setTitle(t).setDescription(d||null).setColor(color||C.info).setFooter({text:"Gen Bot"}).setTimestamp();
+
+// Enhanced logging
+function enhancedLog(guild, action, details, color = C.log) {
+  const embed = fancy(`📝 ${action}`, details, color);
+  return sendLog(guild, embed);
+}
+
+// ── STOCK ALERTS ────────────────────────────────────────────
+async function checkAndAlertStock(guild, tier, service, remaining) {
+  if (remaining <= LOW_STOCK_THRESHOLD) {
+    const cfg = getCfg(guild.id);
+    if (!cfg) return;
+    const meta = TIER_META[tier] || TIER_META.free;
+    const embed = new EmbedBuilder()
+      .setTitle("⚠️  LOW STOCK ALERT")
+      .setColor(C.red)
+      .setDescription(`**${service}** (${meta.emoji} ${meta.label}) is running low!`)
+      .addFields(
+        { name: "📦 Remaining", value: `**${remaining}** accounts left!`, inline: true },
+        { name: "🏷️ Tier", value: `${meta.emoji} ${meta.label}`, inline: true },
+        { name: "🔧 Action Needed", value: "Please restock soon!", inline: false }
+      )
+      .setFooter({ text: "Gen Bot • Stock Alert System" })
+      .setTimestamp();
+    await sendLog(guild, embed);
+
+    // Send DM to staff
+    try {
+      const staffRole = guild.roles.cache.get(cfg.staffRole);
+      if (staffRole) {
+        const members = staffRole.members;
+        for (const [, member] of members) {
+          await member.send({ embeds: [embed] }).catch(() => {});
+        }
+      }
+    } catch (e) { console.error("Stock alert DM error:", e.message); }
+  }
+}
+
+// ── FEEDBACK SYSTEM ─────────────────────────────────────────
+async function saveFeedback(userId, rating, comment = "", service = "", tier = "") {
+  const feedback = await readJson(FILES.feedback);
+  if (!feedback[userId]) feedback[userId] = [];
+  feedback[userId].push({
+    rating,
+    comment,
+    service,
+    tier,
+    date: new Date().toISOString(),
+  });
+  await writeJson(FILES.feedback, feedback);
+}
+
+async function getFeedbackStats() {
+  const feedback = await readJson(FILES.feedback);
+  let totalRating = 0, count = 0;
+  const serviceRatings = {};
+
+  for (const userFeedback of Object.values(feedback)) {
+    for (const fb of userFeedback) {
+      totalRating += fb.rating;
+      count++;
+      if (fb.service) {
+        if (!serviceRatings[fb.service]) serviceRatings[fb.service] = { total: 0, count: 0 };
+        serviceRatings[fb.service].total += fb.rating;
+        serviceRatings[fb.service].count++;
+      }
+    }
+  }
+
+  return {
+    average: count > 0 ? (totalRating / count).toFixed(2) : 0,
+    total: count,
+    serviceRatings,
+  };
+}
+
+// ── AUTO-BACKUP SYSTEM ──────────────────────────────────────
+let backupInterval = null;
+
+async function performBackup() {
+  try {
+    console.log("🔄 Starting automatic backup...");
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const backupData = {
+      timestamp,
+      files: {},
+    };
+
+    // Backup all JSON files
+    for (const [key, filename] of Object.entries(FILES)) {
+      try {
+        const data = await readJson(filename);
+        backupData.files[key] = data;
+      } catch (e) {
+        console.error(`Backup error for ${filename}:`, e.message);
+      }
+    }
+
+    // Backup account directories
+    const accountsBackup = {};
+    for (const guildId of Object.keys(GUILDS)) {
+      const acDir = getAccountsDir(guildId);
+      for (const tier of TIERS) {
+        try {
+          const files = await listDir(`${acDir}/${tier}`);
+          accountsBackup[`${guildId}/${tier}`] = {};
+          for (const f of files) {
+            if (!f.name.endsWith(".txt")) continue;
+            const lines = await readLines(f.path);
+            accountsBackup[`${guildId}/${tier}`][f.name] = lines;
+          }
+        } catch (_) {}
+      }
+    }
+    backupData.accounts = accountsBackup;
+
+    // Save backup
+    const backups = await readJson(FILES.backups);
+    if (!Array.isArray(backups)) backups = [];
+    backups.push(backupData);
+
+    // Keep only last N backups
+    while (backups.length > BACKUP_CONFIG.keepLast) backups.shift();
+
+    await writeJson(FILES.backups, backups);
+    console.log(`✅ Backup completed: ${timestamp}`);
+
+    // Log to Discord
+    for (const guildId of Object.keys(GUILDS)) {
+      const guild = client.guilds.cache.get(guildId);
+      if (guild) {
+        await sendLog(guild, fancy("🔄 Auto-Backup", `Backup completed at ${new Date().toLocaleString()}`, C.success));
+      }
+    }
+  } catch (e) {
+    console.error("Backup failed:", e.message);
+  }
+}
+
+function startBackupScheduler() {
+  if (backupInterval) clearInterval(backupInterval);
+  backupInterval = setInterval(performBackup, BACKUP_CONFIG.intervalMs);
+  console.log(`✅ Backup scheduler started (every ${BACKUP_CONFIG.intervalMs / 1000 / 60} minutes)`);
+}
+
+// ── RATE LIMITING PER USER ─────────────────────────────────
+const userRateLimits = new Map();
+
+function checkRateLimit(userId, type = "perUser") {
+  const now = Date.now();
+  const config = RATE_LIMITS[type] || RATE_LIMITS.perUser;
+  const { max, period } = config;
+
+  if (!userRateLimits.has(userId)) userRateLimits.set(userId, {});
+  const userLimits = userRateLimits.get(userId);
+
+  if (!userLimits[type]) userLimits[type] = [];
+  const requests = userLimits[type].filter(ts => now - ts < period);
+  userLimits[type] = requests;
+
+  if (requests.length >= max) {
+    const wait = Math.ceil((period - (now - requests[0])) / 1000);
+    return { allowed: false, wait };
+  }
+
+  requests.push(now);
+  return { allowed: true };
+}
+
+// ── SERVICE CATEGORIES ──────────────────────────────────────
+function getServiceCategory(serviceName) {
+  const svc = serviceName.toLowerCase();
+  for (const [key, cat] of Object.entries(DEFAULT_CATEGORIES)) {
+    if (cat.services.some(s => s.toLowerCase() === svc)) return key;
+  }
+  return "other";
+}
+
+function getServicesByCategory(category) {
+  return DEFAULT_CATEGORIES[category]?.services || [];
+}
+
+async function getCategorizedStock(guildId, tier = null) {
+  const acDir = getAccountsDir(guildId);
+  const tiers = tier ? [tier] : TIERS;
+  const result = {};
+
+  for (const t of tiers) {
+    const files = await listDir(`${acDir}/${t}`);
+    for (const f of files) {
+      if (!f.name.endsWith(".txt")) continue;
+      const service = f.name.replace(".txt", "");
+      const category = getServiceCategory(service);
+      if (!result[category]) result[category] = {};
+      if (!result[category][t]) result[category][t] = [];
+      const count = (await readLines(f.path)).length;
+      if (count > 0) {
+        result[category][t].push({ name: service, count });
+      }
+    }
+  }
+
+  return result;
+}
+
+// ── USER PROFILES (Enhanced) ────────────────────────────────
+async function getUserProfile(userId, guildId) {
+  const stats = await readJson(FILES.stats);
+  const genlog = await readJson(FILES.genlog);
+  const vouches = await getVouches(userId);
+
+  const total = typeof stats[userId] === "number" ? stats[userId] : 0;
+  const tierData = stats[`${userId}_tiers`] || {};
+  const history = genlog[userId] || [];
+
+  // Calculate rate limit info
+  const now = Date.now();
+  const rateInfo = {};
+  for (const tier of TIERS) {
+    const limit = RATE_LIMITS.perUser;
+    const used = (userRateLimits.get(userId)?.perUser || []).filter(ts => now - ts < limit.period).length;
+    rateInfo[tier] = { used, max: limit.max, remaining: limit.max - used };
+  }
+
+  return { userId, total, vouches, tierData, history, rateInfo };
+}
+
+// ── ANNOUNCEMENT SYSTEM ────────────────────────────────────
+async function announceToAll(guildId, message, sendDM = true) {
+  const guild = client.guilds.cache.get(guildId);
+  if (!guild) throw new Error("Guild not found");
+
+  let sentCount = 0;
+
+  if (sendDM) {
+    // Get all members with generation history
+    const stats = await readJson(FILES.stats);
+    const userIds = Object.keys(stats).filter(k => /^\d+$/.test(k));
+
+    for (const userId of userIds) {
+      try {
+        const member = await guild.members.fetch(userId).catch(() => null);
+        if (member) {
+          await member.send({ embeds: [fancy("📢 Announcement", message, C.info)] }).catch(() => {});
+          sentCount++;
+        }
+      } catch (_) {}
+    }
+  } else {
+    // Send to staff channel
+    const cfg = getCfg(guildId);
+    if (cfg?.logChannel) {
+      const channel = guild.channels.cache.get(cfg.logChannel);
+      if (channel) {
+        await channel.send({ embeds: [fancy("📢 Announcement", message, C.info)] });
+        sentCount = 1;
+      }
+    }
+  }
+
+  return sentCount;
+}
+
+// ── SEARCH ACCOUNTS ─────────────────────────────────────────
+async function searchAccounts(guildId, query, tier = null) {
+  const acDir = getAccountsDir(guildId);
+  const tiers = tier ? [tier] : TIERS;
+  const results = [];
+
+  for (const t of tiers) {
+    const files = await listDir(`${acDir}/${t}`);
+    for (const f of files) {
+      if (!f.name.endsWith(".txt")) continue;
+      const service = f.name.replace(".txt", "");
+      if (service.toLowerCase().includes(query.toLowerCase())) {
+        const lines = await readLines(f.path);
+        results.push({ tier: t, service, count: lines.length, lines: lines.slice(0, 5) }); // Show first 5 accounts
+      }
+    }
+  }
+
+  return results;
+}
+
+// ── GEN COOLDOWN DISPLAY ──────────────────────────────────
+function formatCooldown(ms) {
+  const seconds = Math.ceil(ms / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days}d ${hours % 24}h`;
+  if (hours > 0) return `${hours}h ${minutes % 60}m`;
+  if (minutes > 0) return `${minutes}m ${seconds % 60}s`;
+  return `${seconds}s`;
+}
+
+function getCooldownDisplay(userId) {
+  const now = Date.now();
+  const displays = [];
+
+  for (const tier of TIERS) {
+    const limit = COOLDOWN_LIMITS[tier];
+    if (!limit) continue;
+
+    const used = (botCooldowns.get(`${userId}:${tier}`) || []).filter(ts => now - ts < limit.period * 1000);
+    if (used.length > 0) {
+      const wait = limit.period * 1000 - (now - used[0]);
+      if (wait > 0) {
+        displays.push({ tier, wait, remaining: limit.max - used.length });
+      }
+    }
+  }
+
+  return displays;
+}
+
+// ── AUTO RESTOCK NOTIFICATION ───────────────────────────────
+async function notifyRestock(guild, tier, service, amount) {
+  const embed = new EmbedBuilder()
+    .setTitle("📦  Restock Notification")
+    .setColor(TIER_META[tier]?.color || C.success)
+    .setDescription(`**${service}** has been restocked!`)
+    .addFields(
+      { name: "📦 Amount", value: `**+${amount}** accounts added`, inline: true },
+      { name: "🏷️ Tier", value: `${TIER_META[tier]?.emoji || "❓"} ${TIER_META[tier]?.label || tier}`, inline: true },
+    )
+    .setFooter({ text: "Gen Bot • Stock Management" })
+    .setTimestamp();
+
+  await sendLog(guild, embed);
+
+  // Send to stock channel if configured
+  const cfg = getCfg(guild.id);
+  if (cfg?.stockChannel) {
+    const channel = guild.channels.cache.get(cfg.stockChannel);
+    if (channel) await channel.send({ embeds: [embed] }).catch(() => {});
+  }
+}
 
 function getCfg(guildId) { return getGuild(guildId); }
 
@@ -87,6 +432,30 @@ function checkBotCooldown(userId, tier) {
   const bucket = (botCooldowns.get(key)||[]).filter(ts => now-ts < period*1000);
   if (bucket.length >= max) return { ok:false, wait:Math.ceil((period*1000-(now-bucket[0]))/1000) };
   bucket.push(now); botCooldowns.set(key, bucket); return { ok:true };
+}
+
+// Check all stock for low alerts on startup
+async function checkAllStockAlerts() {
+  console.log("🔍 Checking stock levels...");
+  for (const guildId of Object.keys(GUILDS)) {
+    const guild = client.guilds.cache.get(guildId);
+    if (!guild) continue;
+
+    for (const tier of TIERS) {
+      try {
+        const acDir = getAccountsDir(guildId);
+        const files = await listDir(`${acDir}/${tier}`);
+        for (const f of files) {
+          if (!f.name.endsWith(".txt")) continue;
+          const count = (await readLines(f.path)).length;
+          if (count <= STOCK_ALERT_THRESHOLD) {
+            const service = f.name.replace(".txt","");
+            await checkAndAlertStock(guild, tier, service, count);
+          }
+        }
+      } catch (_) {}
+    }
+  }
 }
 
 function capitalize(s) { return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase(); }
@@ -243,10 +612,16 @@ async function endGiveaway(messageId) {
 // ── SLASH COMMANDS ────────────────────────────────────────────
 const TIER_CHOICES = TIERS.map(t => ({ name:`${TIER_META[t].emoji} ${TIER_META[t].label}`, value:t }));
 
+// Category choices
+const CATEGORY_CHOICES = Object.entries(DEFAULT_CATEGORIES).map(([key, cat]) =>
+  ({ name: `${cat.emoji} ${cat.name.en}`, value: key })
+);
+
 const commands = [
   new SlashCommandBuilder().setName("gen").setDescription("Generate an account")
     .addStringOption(o=>o.setName("tier").setDescription("Tier").setRequired(true).addChoices(...TIER_CHOICES))
-    .addStringOption(o=>o.setName("service").setDescription("Service name (e.g. Netflix)").setRequired(true)),
+    .addStringOption(o=>o.setName("service").setDescription("Service name (e.g. Netflix)").setRequired(true))
+    .addStringOption(o=>o.setName("category").setDescription("Category").addChoices(...CATEGORY_CHOICES)),
 
   new SlashCommandBuilder().setName("redeem").setDescription("[Staff] Validate a ticket")
     .addStringOption(o=>o.setName("code").setDescription("Ticket claim code").setRequired(true)),
@@ -279,17 +654,19 @@ const commands = [
     .addUserOption(o=>o.setName("member").setDescription("Target (empty = yourself)")),
 
   new SlashCommandBuilder().setName("stock").setDescription("View available stock")
-    .addStringOption(o=>o.setName("tier").setDescription("Filter by tier").addChoices(...TIER_CHOICES)),
+    .addStringOption(o=>o.setName("tier").setDescription("Filter by tier").addChoices(...TIER_CHOICES))
+    .addStringOption(o=>o.setName("category").setDescription("Filter by category").addChoices(...CATEGORY_CHOICES)),
 
   new SlashCommandBuilder().setName("profile").setDescription("View a profile")
     .addUserOption(o=>o.setName("member").setDescription("Target (empty = yourself)")),
 
   new SlashCommandBuilder().setName("leaderboard").setDescription("Top 10 generators"),
 
-  new SlashCommandBuilder().setName("add").setDescription("[Staff] Add accounts")
+  new SlashCommandBuilder().setName("add").setDescription("[Staff] Add accounts (bulk supported)")
     .addStringOption(o=>o.setName("tier").setDescription("Tier").setRequired(true).addChoices(...TIER_CHOICES))
     .addStringOption(o=>o.setName("service").setDescription("Service").setRequired(true))
-    .addAttachmentOption(o=>o.setName("file").setDescription(".txt file").setRequired(true)),
+    .addAttachmentOption(o=>o.setName("file").setDescription(".txt or .zip file").setRequired(true))
+    .addBooleanOption(o=>o.setName("bulk").setDescription("Bulk import mode")),
 
   new SlashCommandBuilder().setName("remove").setDescription("[Mod] Remove accounts from stock")
     .addStringOption(o=>o.setName("tier").setDescription("Tier").setRequired(true).addChoices(...TIER_CHOICES))
@@ -299,10 +676,51 @@ const commands = [
   new SlashCommandBuilder().setName("send").setDescription("[Staff] Send accounts via DM")
     .addUserOption(o=>o.setName("member").setDescription("Target").setRequired(true))
     .addStringOption(o=>o.setName("service").setDescription("Service").setRequired(true))
-    .addIntegerOption(o=>o.setName("amount").setDescription("Amount").setRequired(true).setMinValue(1)),
+    .addIntegerOption(o=>o.setName("amount").setDescription("Amount").setRequired(true).setMinValue(1))
+    .addStringOption(o=>o.setName("tier").setDescription("Search in tier").addChoices(...TIER_CHOICES)),
 
 new SlashCommandBuilder().setName("help").setDescription("List all commands"),
   new SlashCommandBuilder().setName("verify").setDescription("Start the verification process"),
+
+  // NEW FEATURES COMMANDS
+  new SlashCommandBuilder().setName("feedback").setDescription("Leave feedback about your generation")
+    .addIntegerOption(o=>o.setName("rating").setDescription("Rating (1-5)").setRequired(true).setMinValue(1).setMaxValue(5))
+    .addStringOption(o=>o.setName("comment").setDescription("Optional comment")),
+
+  new SlashCommandBuilder().setName("announce").setDescription("[Admin] Broadcast message to all users")
+    .addStringOption(o=>o.setName("message").setDescription("Message to send").setRequired(true))
+    .addBooleanOption(o=>o.setName("dm").setDescription("Send via DM (default: true)").setRequired(false)),
+
+  new SlashCommandBuilder().setName("backup").setDescription("[Admin] Force backup of all data"),
+
+  new SlashCommandBuilder().setName("search").setDescription("[Staff] Search accounts in stock")
+    .addStringOption(o=>o.setName("query").setDescription("Search term").setRequired(true))
+    .addStringOption(o=>o.setName("tier").setDescription("Filter by tier").addChoices(...TIER_CHOICES)),
+
+  new SlashCommandBuilder().setName("bulkadd").setDescription("[Staff] Bulk import accounts")
+    .addStringOption(o=>o.setName("tier").setDescription("Tier").setRequired(true).addChoices(...TIER_CHOICES))
+    .addStringOption(o=>o.setName("service").setDescription("Service").setRequired(true))
+    .addStringOption(o=>o.setName("accounts").setDescription("Accounts (one per line)").setRequired(true)),
+
+  new SlashCommandBuilder().setName("cooldown").setDescription("Check your remaining cooldowns"),
+
+  new SlashCommandBuilder().setName("language").setDescription("Set your language preference")
+    .addStringOption(o=>o.setName("lang").setDescription("Language").setRequired(true).addChoices(
+      { name: "🇬🇧 English", value: "en" },
+      { name: "🇫🇷 Français", value: "fr" },
+    )),
+
+  new SlashCommandBuilder().setName("categories").setDescription("View services by category")
+    .addStringOption(o=>o.setName("category").setDescription("Category").addChoices(...CATEGORY_CHOICES)),
+
+  new SlashCommandBuilder().setName("ratecheck").setDescription("[Staff] Check rate limits for a user")
+    .addUserOption(o=>o.setName("member").setDescription("Target").setRequired(true)),
+
+  new SlashCommandBuilder().setName("restock").setDescription("[Staff] Notify about restock")
+    .addStringOption(o=>o.setName("tier").setDescription("Tier").setRequired(true).addChoices(...TIER_CHOICES))
+    .addStringOption(o=>o.setName("service").setDescription("Service").setRequired(true))
+    .addIntegerOption(o=>o.setName("amount").setDescription("Amount added").setRequired(true)),
+
 ].map(c=>c.toJSON());
 
 async function registerCommands() {
@@ -399,15 +817,20 @@ let botReady = false;
 client.once(Events.ClientReady, async () => {
   botReady = true;
   console.log(`🤖 Bot online: ${client.user.tag}`);
-  client.user.setActivity("https://web-production-06585.up.railway.app", {type: 3}); // type 3 = Watching
+  client.user.setActivity("/help • Gen Bot", {type: 3}); // type 3 = Watching
   await loadGuildConfig();
   await migrateAccounts();
   await registerCommands();
   await loadGiveaways();
+  startBackupScheduler();
 
   // Send stock report every hour (NOT on startup to avoid restart spam)
   setInterval(sendHourlyStockReport, 60 * 60 * 1000);
   console.log("✅ Hourly stock report scheduled (every 60min, not on startup)");
+
+  // Check all stock for low alerts on startup
+  await checkAllStockAlerts();
+
   try {
     const res = await fetch(`${BACKEND}/internal/tickets_map`,{headers:{"X-Bot-Secret":BOT_SECRET}});
     if (res.ok) {
@@ -1234,14 +1657,277 @@ ${SITE}`,
 
   // ── /help ─────────────────────────────────────────
   if (name === "help") {
+    const lang = getUserLang(interaction.user);
     const embed=new EmbedBuilder().setTitle("📜  Commands — Gen Bot").setColor(C.info)
       .addFields(
-        {name:"👥  Members",  value:"`/gen` `/profile` `/promote` `/leaderboard` `/stock`",inline:false},
-        {name:"🛡️  Staff",   value:"`/redeem` `/close` `/giveaway` `/add` `/send` `/remove` `/addv` `/rvoutch` `/rall`",inline:false},
-        {name:"ℹ️  Info",     value:"`/web`",inline:false},
+        {name: t("genSelectTier", lang),  value:"`/gen` `/profile` `/promote` `/leaderboard` `/stock` `/categories` `/cooldown` `/feedback` `/language`",inline:false},
+        {name:"🛡️  Staff",   value:"`/redeem` `/close` `/giveaway` `/add` `/send` `/remove` `/addv` `/rvoutch` `/rall` `/bulkadd` `/search` `/ratecheck` `/restock` `/announce` `/backup`",inline:false},
+        {name:"ℹ️  Info",     value:"`/web` `/xbox` `/verify`",inline:false},
         {name:"🏷️  Tiers",   value:TIERS.map(t=>`${TIER_META[t].emoji} \`${t}\``).join(" · "),inline:false},
-      ).setFooter({text:"Gen Bot"}).setTimestamp();
+        {name:"🆕  NEW",      value:"`/feedback` `/announce` `/backup` `/bulkadd` `/search` `/categories` `/cooldown` `/language` `/ratecheck` `/restock`",inline:false},
+      )
+      .setFooter({text:"Gen Bot • Use /language to change language"})
+      .setTimestamp();
     await interaction.reply({embeds:[embed]});
+    return;
+  }
+
+  // ── NEW FEATURE COMMANDS ─────────────────────────────
+
+  // ── /feedback ──────────────────────────────
+  if (name === "feedback") {
+    await interaction.deferReply({ ephemeral: true });
+    const rating = interaction.options.getInteger("rating");
+    const comment = interaction.options.getString("comment") || "";
+    const lang = getUserLang(interaction.user);
+
+    // Get last generation for this user
+    const genlog = await readJson(FILES.genlog);
+    const history = genlog[interaction.user.id] || [];
+    const lastGen = history[0];
+    const service = lastGen?.service || "";
+    const tier = lastGen?.tier || "";
+
+    await saveFeedback(interaction.user.id, rating, comment, service, tier);
+
+    const stars = "⭐".repeat(rating) + "☆".repeat(5 - rating);
+    await interaction.followUp({
+      embeds: [ok(t("feedbackThanks", lang), `${stars}\n\n${comment ? `**Comment:** ${comment}` : ""}`)],
+      ephemeral: true,
+    });
+
+    await sendLog(guild, fancy("💬 Feedback Received", `${interaction.user} rated ${stars} (${rating}/5)${comment ? `\nComment: ${comment}` : ""}`, C.purple));
+    return;
+  }
+
+  // ── /announce ───────────────────────────────
+  if (name === "announce") {
+    await interaction.deferReply();
+    if (!isMod(member)) return interaction.followUp({embeds:[err("Access Denied","You do not have permission.")]});
+
+    const message = interaction.options.getString("message");
+    const sendDM = interaction.options.getBoolean("dm") ?? true;
+    const lang = getUserLang(interaction.user);
+
+    try {
+      const sentCount = await announceToAll(guild.id, message, sendDM);
+      await interaction.followUp({embeds:[ok(t("announceSent", lang, {count: sentCount}), `Message broadcasted to **${sentCount}** users!`)]});
+      await sendLog(guild, fancy("📢 Announcement", `${interaction.user} sent announcement to ${sentCount} users`, C.info));
+    } catch (e) {
+      await interaction.followUp({embeds:[err("Error", e.message)]});
+    }
+    return;
+  }
+
+  // ── /backup ─────────────────────────────────
+  if (name === "backup") {
+    await interaction.deferReply();
+    if (!isMod(member)) return interaction.followUp({embeds:[err("Access Denied","You do not have permission.")]});
+
+    await interaction.followUp({embeds:[warn("Backup Started","Please wait...")]});
+    await performBackup();
+    await interaction.editReply({embeds:[ok("Backup Complete!","All data has been backed up to GitHub.")]});
+    return;
+  }
+
+  // ── /search ──────────────────────────────────
+  if (name === "search") {
+    await interaction.deferReply();
+    if (!isStaff(member)) return interaction.followUp({embeds:[err("Access Denied","You do not have permission.")]});
+
+    const query = interaction.options.getString("query").toLowerCase();
+    const tierFilter = interaction.options.getString("tier");
+    const lang = getUserLang(interaction.user);
+
+    const results = await searchAccounts(guild.id, query, tierFilter);
+
+    if (!results.length) {
+      return interaction.followUp({embeds:[warn(t("noResults", lang), `No accounts found matching "${query}"`)]});
+    }
+
+    const embed = new EmbedBuilder()
+      .setTitle(`🔍 ${t("searchResults", lang)}: "${query}"`)
+      .setColor(C.info)
+      .setTimestamp();
+
+    for (const r of results.slice(0, 5)) { // Limit to 5 results
+      const meta = TIER_META[r.tier] || TIER_META.free;
+      const preview = r.lines.map(l => `• ${l.slice(0, 30)}...`).join("\n");
+      embed.addFields({
+        name: `${meta.emoji} ${r.service} (${r.tier}) — ${r.count} accounts`,
+        value: preview || "*No preview*",
+        inline: false,
+      });
+    }
+
+    await interaction.followUp({embeds:[embed]});
+    return;
+  }
+
+  // ── /bulkadd ────────────────────────────────
+  if (name === "bulkadd") {
+    await interaction.deferReply();
+    if (!isStaff(member)) return interaction.followUp({embeds:[err("Access Denied","You do not have permission.")]});
+
+    const t = interaction.options.getString("tier");
+    const service = capitalize(interaction.options.getString("service"));
+    const accountsStr = interaction.options.getString("accounts");
+    const lang = getUserLang(interaction.user);
+
+    const lines = accountsStr.split("\n").map(l => l.trim()).filter(Boolean);
+    if (!lines.length) return interaction.followUp({embeds:[err(t("error", lang),"No valid accounts provided.")]});
+
+    const acDir = getAccountsDir(guild.id);
+    const path = `${acDir}/${t}/${service}.txt`;
+    const stock = await readLines(path);
+    stock.push(...lines);
+    await writeLines(path, stock);
+
+    await interaction.followUp({embeds:[ok("Bulk Import Complete!", `**${lines.length}** accounts added to \`${t}/${service}\`.\nTotal: **${stock.length}** accounts.`)]});
+
+    // Check if this is a restock (if stock was low)
+    if (stock.length - lines.length <= STOCK_ALERT_THRESHOLD) {
+      await notifyRestock(guild, t, service, lines.length);
+    }
+
+    await sendLog(guild, log("📝 Bulk Added", `${interaction.user} +${lines.length} → \`${t}/${service}\` (bulk import)`));
+    return;
+  }
+
+  // ── /cooldown ───────────────────────────────
+  if (name === "cooldown") {
+    await interaction.deferReply({ ephemeral: true });
+    const displays = getCooldownDisplay(interaction.user.id);
+    const lang = getUserLang(interaction.user);
+
+    if (!displays.length) {
+      return interaction.followUp({embeds:[ok(t("noCooldown", lang), "You have no active cooldowns!")]});
+    }
+
+    const embed = new EmbedBuilder()
+      .setTitle("⏱️  Cooldown Status")
+      .setColor(C.warn)
+      .setTimestamp();
+
+    for (const d of displays) {
+      const meta = TIER_META[d.tier] || TIER_META.free;
+      embed.addFields({
+        name: `${meta.emoji} ${meta.label}`,
+        value: `Time left: **${formatCooldown(d.wait)}**\nRemaining: **${d.remaining}**/${COOLDOWN_LIMITS[d.tier]?.max || "?"}`,
+        inline: true,
+      });
+    }
+
+    await interaction.followUp({embeds:[embed], ephemeral: true});
+    return;
+  }
+
+  // ── /language ───────────────────────────────
+  if (name === "language") {
+    await interaction.deferReply({ ephemeral: true });
+    const lang = interaction.options.getString("lang");
+    const userLang = lang === "fr" ? "fr" : "en";
+
+    // Save preference (in a simple way - could be enhanced to use a DB)
+    const langPrefs = await readJson("lang_prefs.json").catch(() => ({}));
+    langPrefs[interaction.user.id] = userLang;
+    await writeJson("lang_prefs.json", langPrefs);
+
+    await interaction.followUp({
+      embeds: [ok("Language Updated!", `Your language is now set to **${userLang === "fr" ? "Français" : "English"}**.`)],
+      ephemeral: true,
+    });
+    return;
+  }
+
+  // ── /categories ─────────────────────────────
+  if (name === "categories") {
+    await interaction.deferReply();
+    const categoryKey = interaction.options.getString("category");
+    const lang = getUserLang(interaction.user);
+
+    const categorized = await getCategorizedStock(guild.id);
+
+    if (categoryKey && DEFAULT_CATEGORIES[categoryKey]) {
+      const cat = DEFAULT_CATEGORIES[categoryKey];
+      const embed = new EmbedBuilder()
+        .setTitle(`${cat.emoji} ${cat.name[lang] || cat.name.en}`)
+        .setColor(C.info)
+        .setTimestamp();
+
+      const tiers = categorized[categoryKey] || {};
+      for (const [tier, services] of Object.entries(tiers)) {
+        const meta = TIER_META[tier] || TIER_META.free;
+        const lines = services.map(s => `**${s.name}** — ${s.count}`).join("\n");
+        if (lines) embed.addFields({ name: `${meta.emoji} ${meta.label}`, value: lines, inline: false });
+      }
+
+      await interaction.followUp({embeds:[embed]});
+    } else {
+      // Show all categories
+      const embed = new EmbedBuilder()
+        .setTitle(`📁 ${t("category", lang)}`)
+        .setColor(C.info)
+        .setTimestamp();
+
+      for (const [key, cat] of Object.entries(DEFAULT_CATEGORIES)) {
+        const tiers = categorized[key] || {};
+        const totalServices = Object.values(tiers).flat().length;
+        embed.addFields({
+          name: `${cat.emoji} ${cat.name[lang] || cat.name.en}`,
+          value: `**${totalServices}** services`,
+          inline: true,
+        });
+      }
+
+      await interaction.followUp({embeds:[embed]});
+    }
+    return;
+  }
+
+  // ── /ratecheck ──────────────────────────────
+  if (name === "ratecheck") {
+    await interaction.deferReply();
+    if (!isStaff(member)) return interaction.followUp({embeds:[err("Access Denied","You do not have permission.")]});
+
+    const target = interaction.options.getMember("member");
+    const now = Date.now();
+    const lang = getUserLang(interaction.user);
+
+    const embed = new EmbedBuilder()
+      .setTitle("🚦  Rate Limit Check")
+      .setColor(C.info)
+      .setTimestamp()
+      .setThumbnail(target.user.displayAvatarURL());
+
+    for (const tier of TIERS) {
+      const limit = RATE_LIMITS.perUser;
+      const used = (userRateLimits.get(target.id)?.perUser || []).filter(ts => now - ts < limit.period).length;
+      const remaining = limit.max - used;
+      embed.addFields({
+        name: `${TIER_META[tier]?.emoji || "❓"} ${tier}`,
+        value: `Used: **${used}**/${limit.max}\nRemaining: **${remaining}**`,
+        inline: true,
+      });
+    }
+
+    await interaction.followUp({embeds:[embed]});
+    return;
+  }
+
+  // ── /restock ─────────────────────────────────
+  if (name === "restock") {
+    await interaction.deferReply();
+    if (!isStaff(member)) return interaction.followUp({embeds:[err("Access Denied","You do not have permission.")]});
+
+    const t = interaction.options.getString("tier");
+    const service = capitalize(interaction.options.getString("service"));
+    const amount = interaction.options.getInteger("amount");
+    const lang = getUserLang(interaction.user);
+
+    await notifyRestock(guild, t, service, amount);
+
+    await interaction.followUp({embeds:[ok(t("restocked", lang, {service, tier: t, count: amount}), `Notification sent to staff!`)]});
     return;
   }
 }

@@ -12,18 +12,26 @@ function getOctokit() {
   return octokit;
 }
 
-// Simple in-memory cache with TTL
+// Enhanced in-memory cache with TTL and better invalidation
 const cache = new Map();
-const CACHE_TTL = 30_000; // 30s — reduces GitHub API calls significantly
+const CACHE_TTL = 45_000; // 45s — reduces GitHub API calls significantly
+const CACHE_TTL_LONG = 5 * 60 * 1000; // 5 minutes for stable data
 
-function cacheGet(key) {
+function cacheGet(key, longTTL = false) {
   const entry = cache.get(key);
   if (!entry) return null;
-  if (Date.now() - entry.ts > CACHE_TTL) { cache.delete(key); return null; }
+  const ttl = longTTL ? CACHE_TTL_LONG : CACHE_TTL;
+  if (Date.now() - entry.ts > ttl) { cache.delete(key); return null; }
   return entry.data;
 }
-function cacheSet(key, data) { cache.set(key, { data, ts: Date.now() }); }
+function cacheSet(key, data, longTTL = false) { cache.set(key, { data, ts: Date.now(), longTTL }); }
 function cacheInvalidate(key) { cache.delete(key); }
+function cacheInvalidatePattern(pattern) {
+  // Invalidate all keys matching pattern
+  for (const key of cache.keys()) {
+    if (key.includes(pattern)) cache.delete(key);
+  }
+}
 
 // ── RAW FILE OPS ─────────────────────────────────────────────
 

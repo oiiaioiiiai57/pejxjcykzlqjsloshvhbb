@@ -7,11 +7,13 @@ import {
   GUILDS, getGuild, COOLDOWN_LIMITS, FILES, ACCOUNTS_DIR,
   DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET, DISCORD_REDIRECT_URI,
   SITE, BOT_SECRET, loadGuildConfig, getAccountsDir,
+  DEFAULT_CATEGORIES, RATE_LIMITS, BACKUP_CONFIG, FEEDBACK_CONFIG,
 } from "./config.js";
 import crypto from "crypto";
 import { fileURLToPath } from "url";
 import path from "path";
 import { discordSend, discordLog } from "./discord-api.js";
+import { t, messages } from "./i18n.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -608,7 +610,235 @@ app.get("/api/profile", async (req, res) => {
   res.json({ ...session, genHistory: genlog[session.userId] || [] });
 });
 
-// ── STATS ─────────────────────────────────────────────────────
+// ── FEEDBACK API ───────────────────────────────────────
+app.post("/api/feedback", async (req, res) => {
+  const token   = req.headers["x-session-token"] || req.body.token;
+  const session = await getSession(token);
+  if (!session) return res.status(401).json({ error: "Not logged in" });
+
+  const { rating, comment, service, tier } = req.body;
+  if (!rating || rating < 1 || rating > 5) {
+    return res.status(400).json({ error: "Invalid rating (must be 1-5)" });
+  }
+
+  const feedback = await readJson(FILES.feedback);
+  if (!feedback[session.userId]) feedback[session.userId] = [];
+  feedback[session.userId].push({
+    rating,
+    comment: comment || "",
+    service: service || "",
+    tier: tier || "",
+    date: new Date().toISOString(),
+  });
+  await writeJson(FILES.feedback, feedback);
+
+  res.json({ ok: true });
+});
+
+app.get("/api/feedback/stats", async (req, res) => {
+  const feedback = await readJson(FILES.feedback);
+  let totalRating = 0, count = 0;
+  const serviceRatings = {};
+
+  for (const userFeedback of Object.values(feedback)) {
+    for (const fb of userFeedback) {
+      totalRating += fb.rating;
+      count++;
+      if (fb.service) {
+        if (!serviceRatings[fb.service]) serviceRatings[fb.service] = { total: 0, count: 0 };
+        serviceRatings[fb.service].total += fb.rating;
+        serviceRatings[fb.service].count++;
+      }
+    }
+  }
+
+  res.json({
+    average: count > 0 ? (totalRating / count).toFixed(2) : 0,
+    total: count,
+    serviceRatings,
+  });
+});
+
+// ── CATEGORIES API ────────────────────────────────────
+app.get("/api/categories", async (req, res) => {
+  const lang = req.query.lang || "en";
+  const categories = {};
+
+  for (const [key, cat] of Object.entries(DEFAULT_CATEGORIES)) {
+    categories[key] = {
+      name: cat.name[lang] || cat.name.en,
+      emoji: cat.emoji,
+      services: cat.services,
+    };
+  }
+
+  res.json({ categories });
+});
+
+app.get("/api/categories/:category/services", async (req, res) => {
+  const { category } = req.params;
+  const lang = req.query.lang || "en";
+
+  if (!DEFAULT_CATEGORIES[category]) {
+    return res.status(404).json({ error: "Category not found" });
+  }
+
+  const cat = DEFAULT_CATEGORIES[category];
+  const token   = req.headers["x-session-token"] || req.query.token;
+  const session = token ? await getSession(token) : null;
+  const guildId = session?.guildId || Object.keys(GUILDS)[0];
+  const acDir   = getAccountsDir(guildId);
+
+  const services = [];
+  for (const serviceName of cat.services) {
+    for (const tier of ["free", "premium", "booster", "extreme"]) {
+      try {
+        const filePath = `${acDir}/${tier}/${serviceName}.txt`;
+        const lines = await readLines(filePath);
+        if (lines.length > 0) {
+          services.push({ name: serviceName, tier, count: lines.length });
+        }
+      } catch (_) {}
+    }
+  }
+
+  res.json({
+    category: cat.name[lang] || cat.name.en,
+    emoji: cat.emoji,
+    services,
+  });
+});
+
+// ── LANGUAGE PREFERENCE ─────────────────────────────
+app.post("/api/language", async (req, res) => {
+  const token   = req.headers["x-session-token"] || req.body.token;
+  const session = await getSession(token);
+  if (!session) return res.status(401).json({ error: "Not logged in" });
+
+  const { lang } = req.body;
+  if (!["en", "fr"].includes(lang)) {
+    return res.status(400).json({ error: "Invalid language" });
+  }
+
+  const langPrefs = await readJson("lang_prefs.json").catch(() => ({}));
+  langPrefs[session.userId] = lang;
+  await writeJson("lang_prefs.json", langPrefs);
+
+  res.json({ ok: true, lang });
+});
+
+app.get("/api/language", async (req, res) => {
+  const token   = req.headers["x-session-token"] || req.query.token;
+  const session = await getSession(token);
+  if (!session) return res.status(401).json({ error: "Not logged in" });
+
+  const langPrefs = await readJson("lang_prefs.json").catch(() => ({}));
+  res.json({ lang: langPrefs[session.userId] || "en" });
+});
+
+// ── BACKUP API ────────────────────────────────────────
+app.post("/api/backup", async (req, res) => {
+  const token   = req.headers["x-session-token"] || req.body.token;
+  const session = await getSession(token);
+  if (!session?.isStaff) return res.status(403).json({ error: "Staff only" });
+
+  try {
+    // Dynamic import to avoid circular dependency
+    const { performBackup } = await import("./bot.js");
+    await performBackup();
+    res.json({ ok: true, message: "Backup completed" });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get("/api/backups", async (req, res) => {
+  const token   = req.headers["x-session-token"] || req.query.token;
+  const session = await getSession(token);
+  if (!session?.isStaff) return res.status(403).json({ error: "Staff only" });
+
+  const backups = await readJson(FILES.backups);
+  res.json({ backups: backups || [] });
+});
+
+// ── SEARCH API ───────────────────────────────────────
+app.get("/api/search", async (req, res) => {
+  const token   = req.headers["x-session-token"] || req.query.token;
+  const session = await getSession(token);
+  if (!session?.isStaff) return res.status(403).json({ error: "Staff only" });
+
+  const { query, tier } = req.query;
+  if (!query) return res.status(400).json({ error: "Query required" });
+
+  const acDir = getAccountsDir(session.guildId);
+  const tiers = tier ? [tier] : ["free", "premium", "booster", "extreme"];
+  const results = [];
+
+  for (const t of tiers) {
+    try {
+      const files = await listDir(`${acDir}/${t}`);
+      for (const f of files) {
+        if (!f.name.endsWith(".txt")) continue;
+        const service = f.name.replace(".txt", "");
+        if (service.toLowerCase().includes(query.toLowerCase())) {
+          const lines = await readLines(f.path);
+          results.push({
+            tier: t,
+            service,
+            count: lines.length,
+            preview: lines.slice(0, 3),
+          });
+        }
+      }
+    } catch (_) {}
+  }
+
+  res.json({ results });
+});
+
+// ── RATE LIMIT CHECK API ─────────────────────────────
+app.get("/api/rate-limit/:userId", async (req, res) => {
+  const token   = req.headers["x-session-token"] || req.query.token;
+  const session = await getSession(token);
+  if (!session?.isStaff) return res.status(403).json({ error: "Staff only" });
+
+  const { userId } = req.params;
+  const now = Date.now();
+
+  const limits = {};
+  for (const tier of ["free", "premium", "booster", "extreme"]) {
+    const config = RATE_LIMITS.perUser;
+    const used = (cooldowns.get(userId)?.perUser || []).filter(ts => now - ts < config.period).length;
+    limits[tier] = {
+      used,
+      max: config.max,
+      remaining: config.max - used,
+    };
+  }
+
+  res.json({ userId, limits });
+});
+
+// ── ANNOUNCEMENT API ────────────────────────────────
+app.post("/api/announce", async (req, res) => {
+  const token   = req.headers["x-session-token"] || req.body.token;
+  const session = await getSession(token);
+  if (!session?.isStaff) return res.status(403).json({ error: "Staff only" });
+
+  const { message, sendDM } = req.body;
+  if (!message) return res.status(400).json({ error: "Message required" });
+
+  try {
+    // Dynamic import to avoid circular dependency
+    const { announceToAll } = await import("./bot.js");
+    const sentCount = await announceToAll(session.guildId, message, sendDM !== false);
+    res.json({ ok: true, sentCount });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// ── STATS (Enhanced) ─────────────────────────────────────────────
 app.get("/api/stats", async (req, res) => {
   const stats = await readJson(FILES.stats);
   const total = Object.entries(stats)

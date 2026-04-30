@@ -103,15 +103,21 @@ export const TIER_META = {
 };
 
 export const FILES = {
-  pending:   "pending.json",
-  stats:     "stats.json",
-  cooldowns: "cooldowns.json",
-  sendCd:    "send_cooldown.json",
-  vouches:   "vouches.json",
-  sessions:  "web_sessions.json",
-  genlog:    "web_genlog.json",
-  tickets:   "web_tickets.json",
-  giveaways: "giveaways.json",
+  pending:      "pending.json",
+  stats:        "stats.json",
+  cooldowns:     "cooldowns.json",
+  sendCd:       "send_cooldown.json",
+  vouches:       "vouches.json",
+  sessions:      "web_sessions.json",
+  genlog:       "web_genlog.json",
+  tickets:       "web_tickets.json",
+  giveaways:     "giveaways.json",
+  feedback:      "feedback.json",
+  backups:       "backups.json",
+  announcements: "announcements.json",
+  categories:    "categories.json",
+  searchlog:     "searchlog.json",
+  rateLimits:    "rate_limits.json",
 };
 
 export const ACCOUNTS_DIR = "accounts";
@@ -122,6 +128,45 @@ export function getAccountsDir(guildId) {
   const folder = cfg?.folder || "server1";
   return `${ACCOUNTS_DIR}/${folder}`;
 }
+
+// Service categories (can be overridden per guild)
+export const DEFAULT_CATEGORIES = {
+  streaming: { name: { en: "Streaming", fr: "Streaming" }, emoji: "🎬", services: ["Netflix", "Disney+", "Hulu", "HBO Max", "Prime Video", "Crunchyroll"] },
+  gaming:    { name: { en: "Gaming",    fr: "Jeux Vidéo" },   emoji: "🎮", services: ["Xbox", "PlayStation", "Steam", "Minecraft", "Epic Games"] },
+  music:     { name: { en: "Music",     fr: "Musique" },       emoji: "🎵", services: ["Spotify", "Apple Music", "YouTube Music", "Tidal"] },
+  software:  { name: { en: "Software",  fr: "Logiciels" },     emoji: "💻", services: ["Adobe", "Microsoft Office", "Antivirus"] },
+  other:     { name: { en: "Other",     fr: "Autre" },         emoji: "📦", services: [] },
+};
+
+// Rate limiting per user (enhanced)
+export const RATE_LIMITS = {
+  perUser: {
+    free:    { max: 10, period: 3600000 },  // 10 per hour
+    premium: { max: 20, period: 3600000 },  // 20 per hour
+    booster: { max: 30, period: 3600000 },  // 30 per hour
+    extreme: { max: 50, period: 3600000 },  // 50 per hour
+  },
+  webGen:   { max: 5,  period: 60000 },    // 5 per minute from web
+};
+
+// Stock alert thresholds
+export const STOCK_ALERT_THRESHOLD = 5; // Alert when stock <= 5
+export const LOW_STOCK_THRESHOLD   = 3; // Very low stock
+
+// Auto-backup config
+export const BACKUP_CONFIG = {
+  enabled: true,
+  intervalMs: 6 * 60 * 60 * 1000, // 6 hours
+  keepLast: 10, // Keep last 10 backups
+  compress: true,
+};
+
+// Feedback config
+export const FEEDBACK_CONFIG = {
+  enabled: true,
+  maxRating: 5,
+  requireFeedback: false,
+};
 
 export const DISCORD_CLIENT_ID     = process.env.DISCORD_CLIENT_ID || "1481723412580929536";
 export const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
